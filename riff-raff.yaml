@@ -1,0 +1,19 @@
+stacks: [composer]
+regions: [eu-west-1]
+
+deployments:
+  rcs-poller-lambda:
+    type: aws-lambda
+    parameters:
+      bucket: composer-dist
+      functionNames: [rcs-poller-lambda-]
+      fileName: rcs-poller-lambda.jar
+      prefixStack: false
+    dependencies: [rcs-poller-lambda-cfn]
+  rcs-poller-lambda-cfn:
+    type: cloud-formation
+    app: rcs-poller-lambda
+    parameters:
+      prependStackToCloudFormationStackName: false
+      cloudFormationStackName: rcs-poller-lambda
+      templatePath: cfn.yaml

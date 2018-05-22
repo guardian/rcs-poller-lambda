@@ -1,0 +1,46 @@
+<tagSet tagSetId="26250824">
+    <contentType>image</contentType>
+    <id>6c5150442d8226e9ca92a1d7128378742f68a313</id>
+    <supplierName>Sarah Lee</supplierName>
+    <supplierID>GNL000405</supplierID>
+    <prAgreement>Y</prAgreement>
+    <rights>
+        <right>
+            <rightCode>LICENSINGNONSUBSALES</rightCode>
+            <acquired>Y</acquired>
+            <properties>
+                <property>
+                    <propertyCode>TERM</propertyCode>
+                    <value>Unlimited usages</value>
+                </property>
+                <property>
+                    <propertyCode>EXERCISABLEPERIOD</propertyCode>
+                    <value>In perpetuity</value>
+                </property>
+                <property>
+                    <propertyCode>EXCLUSIVITYPERIOD</propertyCode>
+                    <expiresOn>2018-04-20T11:33:34</expiresOn>
+                    <value>60 Day(s)</value>
+                </property>
+                <property>
+                    <propertyCode>PRIORCONTRIBUTORAPPROVAL</propertyCode>
+                    <value>N</value>
+                </property>
+                <property>
+                    <propertyCode>TERRITORY</propertyCode>
+                    <value>World</value>
+                </property>
+                <property>
+                    <propertyCode>PRIORAPPROVALRE</propertyCode>
+                </property>
+                <property>
+                    <propertyCode>TERRITORYEXCLUSIVITY</propertyCode>
+                    <value>World</value>
+                </property>
+                <property>
+                    <propertyCode>TERRITORYPRIORAPPROVAL</propertyCode>
+                </property>
+            </properties>
+        </right>
+    </rights>
+</tagSet>
