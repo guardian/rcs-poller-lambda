@@ -1,6 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: A lambda to poll RCS
 Parameters:
+  VpcId:
+    Description: The VPC in which Flexible Content lives
+    Type: AWS::EC2::VPC::Id
+  PrivateSubnets:
+    Description: The private subnets in which the Flexible Content API isntances live
+    Type: List<AWS::EC2::Subnet::Id>
   Stack:
     Description: Stack name
     Type: String
@@ -21,6 +27,11 @@ Parameters:
     Type: String
     Default: composer-dist
 Resources:
+  LambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the lambda querying capi.
+      VpcId: !Ref VpcId
   ExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -33,6 +44,16 @@ Resources:
             Action: sts:AssumeRole
       Path: /
       Policies:
+        - PolicyName: VPCPolicy
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DetachNetworkInterface
+              - ec2:DeleteNetworkInterface
+              Resource: "*"
         - PolicyName: logs
           PolicyDocument:
             Statement:
@@ -57,6 +78,10 @@ Resources:
         S3Bucket:
           Ref: DeployBucket
         S3Key: !Sub ${Stack}/${Stage}/${App}/${App}.jar
+      VpcConfig:
+        SecurityGroupIds:
+          - Ref: LambdaSecurityGroup
+        SubnetIds: !Ref PrivateSubnets
       Environment:
         Variables:
           Stage: !Ref Stage
@@ -69,11 +94,11 @@ Resources:
       Runtime: java8
       Timeout: 60
 
-  DailyEvent:
+  RateEvent:
     Type: AWS::Events::Rule
     Properties:
-      Description: Event sent to process the previous day of data
-      ScheduleExpression: cron(14 3 * * ? *)
+      Description: Event sent to process the stream
+      ScheduleExpression: rate(5 minutes)
       Targets:
         - Id: Lambda
           Arn: !GetAtt Lambda.Arn
@@ -84,4 +109,4 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt Lambda.Arn
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt DailyEvent.Arn
+      SourceArn: !GetAtt RateEvent.Arn
