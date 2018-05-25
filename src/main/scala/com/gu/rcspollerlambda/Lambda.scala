@@ -30,8 +30,8 @@ object Lambda extends Logging with HTTP with Config {
    * I recommend to put your logic outside of the handler
    */
   def process(): Unit = stage match {
-      case "DEV" => println(readXml)
-      case _ => fetchXml
+    case "DEV" => println(readXml)
+    case _ => fetchXml
   }
 
   def fetchXml = wsClient.url(rcsUrl).get().onComplete {

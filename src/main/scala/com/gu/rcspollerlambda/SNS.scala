@@ -1,12 +1,10 @@
 package com.gu.rcspollerlambda
 
 import com.amazonaws.services.sns.model.PublishRequest
-import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSClientBuilder}
+import com.amazonaws.services.sns.{ AmazonSNS, AmazonSNSClientBuilder }
 import io.circe.Json
 
 object SNS extends Config {
-  private val awsRegion = "eu-west-1"
-
   private lazy val client: AmazonSNS = AmazonSNSClientBuilder.standard()
     .withRegion(awsRegion)
     .withCredentials(awsCredentials).build()

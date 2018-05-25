@@ -70,6 +70,13 @@ Resources:
               Action:
                 - lambda:InvokeFunction
               Resource: "*"
+        - PolicyName: config
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: arn:aws:s3:::rcs-poller-lambda-config/*
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -89,7 +96,7 @@ Resources:
           App: !Ref App
       Description: A lambda to poll RCS
       Handler: com.gu.rcspollerlambda.Lambda::handler
-      MemorySize: 128
+      MemorySize: 512
       Role: !GetAtt ExecutionRole.Arn
       Runtime: java8
       Timeout: 60
