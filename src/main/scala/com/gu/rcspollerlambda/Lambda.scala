@@ -34,7 +34,7 @@ object Lambda extends Logging with HTTP with Config {
     case _ => fetchXml
   }
 
-  def fetchXml = wsClient.url(rcsUrl).get().onComplete {
+  def fetchXml = wsClient.url(rcsUrl).withQueryStringParameters(("lastid", "26250821"), ("subscribername", "TEST")).get().onComplete {
     case Success(result) => logger.info(result.body)
     case Failure(err) => logger.error(err.getMessage)
   }
