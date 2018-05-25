@@ -3,7 +3,7 @@ package com.gu.rcspollerlambda
 import java.util.Properties
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.auth.{ AWSCredentialsProviderChain, InstanceProfileCredentialsProvider }
+import com.amazonaws.auth._
 import com.amazonaws.regions.Regions
 import com.gu.rcspollerlambda.S3._
 
@@ -14,8 +14,11 @@ trait Config {
   val stage = Option(System.getenv("Stage")).getOrElse("DEV")
 
   lazy val awsCredentials = new AWSCredentialsProviderChain(
+    new EnvironmentVariableCredentialsProvider(),
     new ProfileCredentialsProvider("composer"),
-    InstanceProfileCredentialsProvider.getInstance())
+    new InstanceProfileCredentialsProvider(false),
+    new DefaultAWSCredentialsProviderChain
+  )
 
   private lazy val s3Client = getS3Client(awsCredentials)
   private lazy val config = loadConfig()
