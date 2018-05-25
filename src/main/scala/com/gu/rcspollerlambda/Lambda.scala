@@ -1,7 +1,6 @@
 package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
-import org.slf4j.{ Logger, LoggerFactory }
 
 import scala.xml.{ Elem, XML }
 
@@ -27,10 +26,7 @@ object Env {
     Option(System.getenv("Stage")).getOrElse("DEV"))
 }
 
-object Lambda {
-
-  val logger: Logger = LoggerFactory.getLogger(this.getClass)
-
+object Lambda extends Logging {
   /*
    * This is your lambda entry point
    */
