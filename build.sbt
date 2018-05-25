@@ -19,7 +19,9 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
   "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
   "com.amazonaws" % "aws-java-sdk-sns" % "1.11.335",
+  "com.amazonaws" % "aws-java-sdk-s3" % "1.11.335",
   "io.circe" %% "circe-core" % "0.9.3",
+  "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
   "com.amazonaws" % "aws-java-sdk-config" %  "1.11.163",
   "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0",
   "org.slf4j" % "slf4j-log4j12" % "1.7.25"

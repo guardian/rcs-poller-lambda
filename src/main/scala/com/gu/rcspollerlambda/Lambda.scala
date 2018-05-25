@@ -2,6 +2,8 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{ Failure, Success }
 import scala.xml.{ Elem, XML }
 
 /**
@@ -15,31 +17,27 @@ class LambdaInput() {
   def setName(theName: String): Unit = name = theName
 }
 
-case class Env(app: String, stack: String, stage: String) {
-  override def toString: String = s"App: $app, Stack: $stack, Stage: $stage\n"
-}
-
-object Env {
-  def apply(): Env = Env(
-    Option(System.getenv("App")).getOrElse("DEV"),
-    Option(System.getenv("Stack")).getOrElse("DEV"),
-    Option(System.getenv("Stage")).getOrElse("DEV"))
-}
-
-object Lambda extends Logging {
+object Lambda extends Logging with HTTP with Config {
   /*
    * This is your lambda entry point
    */
-  def handler(lambdaInput: LambdaInput, context: Context): Unit = {
-    val env = Env()
-    logger.info(s"Starting $env")
-    logger.info(process(lambdaInput.name, env))
+  def handler(context: Context): Unit = {
+    logger.info(s"Starting RCS Poller Lambda")
+    process()
   }
 
   /*
    * I recommend to put your logic outside of the handler
    */
-  def process(name: String, env: Env): String = s"Hello $name! (from ${env.app} in ${env.stack})\n"
+  def process(): Unit = stage match {
+      case "DEV" => println(readXml)
+      case _ => fetchXml
+  }
+
+  def fetchXml = wsClient.url(rcsUrl).get().onComplete {
+    case Success(result) => logger.info(result.body)
+    case Failure(err) => logger.error(err.getMessage)
+  }
 
   // TODO: Hit RCS endpoint for XML
   def readXml: Elem = XML.loadFile(System.getProperty("user.dir") + "/src/main/scala/com/gu/rcspollerlambda/example.xml")
@@ -47,6 +45,6 @@ object Lambda extends Logging {
 
 object TestIt {
   def main(args: Array[String]): Unit = {
-    println(Lambda.readXml)
+    Lambda.process()
   }
 }
