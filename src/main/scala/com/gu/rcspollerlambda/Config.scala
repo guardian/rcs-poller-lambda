@@ -17,8 +17,7 @@ trait Config {
     new EnvironmentVariableCredentialsProvider(),
     new ProfileCredentialsProvider("composer"),
     new InstanceProfileCredentialsProvider(false),
-    new DefaultAWSCredentialsProviderChain
-  )
+    new DefaultAWSCredentialsProviderChain)
 
   private lazy val s3Client = getS3Client(awsCredentials)
   private lazy val config = loadConfig()

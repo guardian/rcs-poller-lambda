@@ -21,6 +21,7 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-sns" % "1.11.335",
   "com.amazonaws" % "aws-java-sdk-s3" % "1.11.335",
   "io.circe" %% "circe-core" % "0.9.3",
+  "io.circe" %% "circe-generic" % "0.9.3",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
   "com.amazonaws" % "aws-java-sdk-config" %  "1.11.163",
   "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0",
