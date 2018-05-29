@@ -22,6 +22,9 @@ Parameters:
       - CODE
       - PROD
     Default: CODE
+  ELKKinesisStream:
+    Type: String
+    Description: Name of the kinesis stream for logging to ELK (logs.gutools)
   DeployBucket:
     Description: Bucket where RiffRaff uploads artifacts on deploy
     Type: String
@@ -54,7 +57,7 @@ Resources:
               - ec2:DetachNetworkInterface
               - ec2:DeleteNetworkInterface
               Resource: "*"
-        - PolicyName: logs
+        - PolicyName: CloudWatchLogs
           PolicyDocument:
             Statement:
               Effect: Allow
@@ -63,20 +66,28 @@ Resources:
                 - logs:CreateLogStream
                 - logs:PutLogEvents
               Resource: arn:aws:logs:*:*:*
-        - PolicyName: lambda
+        - PolicyName: Lambda
           PolicyDocument:
             Statement:
               Effect: Allow
               Action:
                 - lambda:InvokeFunction
               Resource: "*"
-        - PolicyName: config
+        - PolicyName: Configuration
           PolicyDocument:
             Statement:
               Effect: Allow
               Action:
                 - s3:GetObject
               Resource: arn:aws:s3:::rcs-poller-lambda-config/*
+        - PolicyName: ELKKinesisPolicy
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action:
+              - kinesis:PutRecord
+              - kinesis:DescribeStream
+              Resource: !Sub arn:aws:kinesis:eu-west-1:743583969668:stream/${ELKKinesisStream}
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
