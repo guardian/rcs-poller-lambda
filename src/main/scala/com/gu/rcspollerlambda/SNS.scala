@@ -4,7 +4,7 @@ import com.amazonaws.services.sns.model.PublishRequest
 import com.amazonaws.services.sns.{ AmazonSNS, AmazonSNSClientBuilder }
 import io.circe.Json
 
-object SNS extends Config {
+object SNS extends Config with Logging {
   private lazy val client: AmazonSNS = AmazonSNSClientBuilder.standard()
     .withRegion(awsRegion)
     .withCredentials(awsCredentials).build()
@@ -13,6 +13,6 @@ object SNS extends Config {
 
   def publish(message: Json) {
     val result = client.publish(new PublishRequest(topicArn, message.toString(), "update-rcs-rights"))
-    println("Sent to SNS", result)
+    logger.info("Sent to SNS", result)
   }
 }

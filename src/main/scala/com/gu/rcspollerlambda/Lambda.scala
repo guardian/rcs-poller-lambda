@@ -30,7 +30,7 @@ object Lambda extends Logging with HTTP with Config {
   def process(): Unit = stage match {
     case "DEV" =>
       val json = xmlToJson(readXml)
-      println(json.noSpaces)
+      logger.info(json.noSpaces)
     case _ => fetchXml
   }
 
@@ -44,7 +44,11 @@ object Lambda extends Logging with HTTP with Config {
       SNS.publish(json)
   }
 
-  private def xmlToJson(tagsSets: Elem): Json = RightsBatch(tagsSets).asJson
+  private def xmlToJson(tagsSets: Elem): Json = {
+    val rb = RightsBatch(tagsSets)
+    logger.info("Extracted rights from XML", rb)
+    rb.asJson
+  }
 
   // For DEV only
   private def readXml: Elem = {
