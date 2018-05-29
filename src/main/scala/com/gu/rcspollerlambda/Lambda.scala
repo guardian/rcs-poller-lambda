@@ -19,7 +19,7 @@ object Lambda extends Logging with HTTP with Config {
 
   def process(): Unit = stage match {
     case "DEV" =>
-      val json = XMLOps.xmlToJson(XMLOps.readXml)
+      val json = XMLOps.xmlToJson(XMLOps.loadXmlFromS3)
       logger.info(json.noSpaces)
     case _ => XMLOps.fetchXml
   }

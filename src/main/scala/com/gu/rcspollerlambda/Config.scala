@@ -19,7 +19,7 @@ trait Config {
     new InstanceProfileCredentialsProvider(false),
     new DefaultAWSCredentialsProviderChain)
 
-  private lazy val s3Client = getS3Client(awsCredentials)
+  lazy val s3Client = getS3Client(awsCredentials)
   private lazy val config = loadConfig()
   private def getConfig(property: String) = Option(config.getProperty(property)) getOrElse sys.error(s"'$property' property missing.")
 
