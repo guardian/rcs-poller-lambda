@@ -21,7 +21,7 @@ object XMLOps extends Config {
 
   def xmlToJson(tagsSets: Elem): Json = {
     val rb = RightsBatch(tagsSets)
-    logger.info("Extracted rights from XML", rb)
+    logger.info(s"Extracted rights from XML $rb")
     rb.asJson
   }
 

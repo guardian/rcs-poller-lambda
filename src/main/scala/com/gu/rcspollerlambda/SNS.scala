@@ -13,6 +13,6 @@ object SNS extends Config with Logging {
 
   def publish(message: Json) {
     val result = client.publish(new PublishRequest(topicArn, message.toString(), "update-rcs-rights"))
-    logger.info("Sent to SNS", result)
+    logger.info(s"Sent to SNS: $result")
   }
 }

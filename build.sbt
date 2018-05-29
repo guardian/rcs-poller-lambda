@@ -25,7 +25,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
   "com.amazonaws" % "aws-java-sdk-config" %  "1.11.163",
   "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0",
-  "org.slf4j" % "slf4j-log4j12" % "1.7.25"
+  "net.logstash.logback" % "logstash-logback-encoder" % "5.1",
+  "com.gu" % "kinesis-logback-appender" % "1.4.2"
 )
 
 enablePlugins(RiffRaffArtifact)

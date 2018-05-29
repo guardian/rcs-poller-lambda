@@ -24,6 +24,8 @@ trait Config {
   private def getConfig(property: String) = Option(config.getProperty(property)) getOrElse sys.error(s"'$property' property missing.")
 
   lazy val rcsUrl = getConfig("rcs.url")
+  lazy val loggingStreamName = getConfig("logging.stream")
+  lazy val elkLoggingEnabled = stage != "DEV"
 
   private def loadConfig() = {
     val configFileKey = s"$stage/config.properties"
