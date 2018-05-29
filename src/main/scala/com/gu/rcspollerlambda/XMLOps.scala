@@ -28,9 +28,10 @@ object XMLOps extends Config {
 
   // For DEV only
   def loadXmlFromS3: Elem = {
-    val configFileKey = s"example.xml"
-    val configInputStream = S3.s3Client.getObject("rcs-poller-lambda-config", configFileKey)
-    val content = configInputStream.getObjectContent
+    val xmlFileKey = s"example.xml"
+    val xmlInputStream = s3Client.getObject("rcs-poller-lambda-config", xmlFileKey)
+    logger.info(s"Loading XML from S3 bucket: ${xmlInputStream.getBucketName}/${xmlInputStream.getKey}")
+    val content = xmlInputStream.getObjectContent
 
     val xml = XML.load(content)
     logger.info(xml.toString())
