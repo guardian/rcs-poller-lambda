@@ -2,19 +2,13 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.models._
-import io.circe.{ Json, Printer }
-import org.joda.time.DateTime
+import io.circe.Json
+import io.circe.syntax._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{ Failure, Success }
 import scala.xml.{ Elem, XML }
-import io.circe.syntax._
 
-/**
- * This is compatible with aws' lambda JSON to POJO conversion.
- * You can test your lambda by sending it the following payload:
- * {"name": "Bob"}
- */
 class LambdaInput() {
   var name: String = _
   def getName(): String = name
@@ -53,7 +47,11 @@ object Lambda extends Logging with HTTP with Config {
   private def xmlToJson(tagsSets: Elem): Json = RightsBatch(tagsSets).asJson
 
   // For DEV only
-  private def readXml: Elem = XML.loadFile(System.getProperty("user.dir") + "/src/main/scala/com/gu/rcspollerlambda/example.xml")
+  private def readXml: Elem = {
+    val loader = getClass.getClassLoader
+    val file = loader.getResource("example.xml").getFile
+    XML.loadFile(file)
+  }
 }
 
 object TestIt {
