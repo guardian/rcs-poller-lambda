@@ -1,13 +1,6 @@
 package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.gu.rcspollerlambda.models._
-import io.circe.Json
-import io.circe.syntax._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{ Failure, Success }
-import scala.xml.{ Elem, XML }
 
 class LambdaInput() {
   var name: String = _
@@ -24,37 +17,11 @@ object Lambda extends Logging with HTTP with Config {
     process()
   }
 
-  /*
-   * I recommend to put your logic outside of the handler
-   */
   def process(): Unit = stage match {
     case "DEV" =>
-      val json = xmlToJson(readXml)
+      val json = XMLOps.xmlToJson(XMLOps.readXml)
       logger.info(json.noSpaces)
-    case _ => fetchXml
-  }
-
-  def fetchXml = wsClient.url(rcsUrl).withQueryStringParameters(("lastid", "26250821"), ("subscribername", "TEST")).get().onComplete {
-    case Success(result) => logger.info(result.body)
-    case Failure(err) =>
-      logger.error(err.getMessage)
-      //TODO: Remove once the RCS endpoint is done
-      logger.info("Trying to read from file instead...")
-      val json = xmlToJson(readXml)
-      SNS.publish(json)
-  }
-
-  private def xmlToJson(tagsSets: Elem): Json = {
-    val rb = RightsBatch(tagsSets)
-    logger.info("Extracted rights from XML", rb)
-    rb.asJson
-  }
-
-  // For DEV only
-  private def readXml: Elem = {
-    val loader = getClass.getClassLoader
-    val file = loader.getResource("example.xml").getFile
-    XML.loadFile(file)
+    case _ => XMLOps.fetchXml
   }
 }
 
