@@ -105,7 +105,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: Event sent to process the stream
-      ScheduleExpression: rate(5 minutes)
+      ScheduleExpression: rate(1 minute)
       Targets:
         - Id: Lambda
           Arn: !GetAtt Lambda.Arn

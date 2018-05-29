@@ -13,7 +13,6 @@ object Lambda extends Logging with HTTP with Config {
    * This is your lambda entry point
    */
   def handler(context: Context): Unit = {
-    logger.info(s"Starting RCS Poller Lambda")
     process()
   }
 
