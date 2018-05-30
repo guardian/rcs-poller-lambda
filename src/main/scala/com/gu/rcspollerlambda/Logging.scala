@@ -1,45 +1,54 @@
 package com.gu.rcspollerlambda
 
 import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.classic.{ Logger => LogbackLogger }
-import ch.qos.logback.core.{ Appender, LayoutBase }
-import com.gu.logback.appender.kinesis.KinesisAppender
+import ch.qos.logback.classic.{ LoggerContext, Logger => LogbackLogger }
+import ch.qos.logback.core.ConsoleAppender
+import ch.qos.logback.core.encoder.LayoutWrappingEncoder
 import net.logstash.logback.layout.LogstashLayout
 import org.slf4j.{ LoggerFactory, Logger => SLFLogger }
 
-trait Logging extends Config {
-  lazy val logger = LoggerFactory.getLogger(SLFLogger.ROOT_LOGGER_NAME).asInstanceOf[LogbackLogger]
+trait Logging {
+  val logger: SLFLogger = LoggerFactory.getLogger(this.getClass)
+}
 
-  def configure {
-    logger.info("bootstrapping kinesis appender if configured correctly")
+object Logging {
 
-    val stack = "composer"
-    val appName = "rcs-poller-lambda"
-    val elkKinesisStream = loggingStreamName
+  private val rootLogger = LoggerFactory.getLogger(SLFLogger.ROOT_LOGGER_NAME).asInstanceOf[LogbackLogger]
 
-    logger.info(s"bootstrapping kinesis appender with $stack -> $appName -> $stage -> $elkKinesisStream")
-    val context = logger.getLoggerContext
+  (sys.env.get("Stack"), sys.env.get("App"), sys.env.get("Stage")) match {
+    case (Some(stack), Some(app), Some(stage)) =>
+      val newAppender = createAppender(stack, app, stage)
 
-    val layout = new LogstashLayout()
-    layout.setContext(context)
-    layout.setCustomFields(s"""{"stack":"$stack","app":"$appName","stage":"$stage"}""")
-    layout.start()
+      disableExistingAppender()
+      rootLogger.addAppender(newAppender)
 
-    val appender = new KinesisAppender()
-    appender.setBufferSize(1000)
-    appender.setRegion(awsRegion.getName)
-    appender.setStreamName(elkKinesisStream)
-    appender.setContext(context)
-    appender.setLayout(layout.asInstanceOf[LayoutBase[Nothing]])
-    appender.setCredentialsProvider(awsCredentials)
-
-    appender.start()
-
-    logger.addAppender(appender.asInstanceOf[Appender[ILoggingEvent]])
-    logger.info("Configured kinesis appender")
+    case _ =>
+    // leave logging alone
   }
 
-  if (elkLoggingEnabled) {
-    configure
+  private def setLayout(context: LoggerContext, stack: String, app: String, stage: String): LogstashLayout = {
+    val layout = new LogstashLayout()
+    layout.setContext(context)
+    layout.setCustomFields(s"""{"stack":"$stack","app":"$app","stage":"$stage"}""")
+    layout.start()
+
+    layout
+  }
+
+  private def createAppender(stack: String, app: String, stage: String) = {
+    val layout = setLayout(rootLogger.getLoggerContext, stack, app, stage)
+
+    val encoder = new LayoutWrappingEncoder[ILoggingEvent]
+    encoder.setLayout(layout)
+
+    val appender = new ConsoleAppender[ILoggingEvent]
+    appender.setEncoder(encoder)
+    appender.start()
+
+    appender
+  }
+
+  private def disableExistingAppender() = {
+    Option(rootLogger.getAppender("console")).foreach(_.stop())
   }
 }

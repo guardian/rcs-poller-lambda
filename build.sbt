@@ -15,18 +15,19 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code"
 )
 
+val awsVersion = "1.11.338"
+val circeVersion = "0.9.3"
+
 libraryDependencies ++= Seq(
+  "com.amazonaws" % "aws-java-sdk-sns" % awsVersion,
+  "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
-  "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
-  "com.amazonaws" % "aws-java-sdk-sns" % "1.11.335",
-  "com.amazonaws" % "aws-java-sdk-s3" % "1.11.335",
-  "io.circe" %% "circe-core" % "0.9.3",
-  "io.circe" %% "circe-generic" % "0.9.3",
+  "com.gu" % "kinesis-logback-appender" % "1.4.2",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
-  "com.amazonaws" % "aws-java-sdk-config" %  "1.11.163",
-  "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0",
+  "io.circe" %% "circe-core" % circeVersion,
+  "io.circe" %% "circe-generic" % circeVersion,
   "net.logstash.logback" % "logstash-logback-encoder" % "5.1",
-  "com.gu" % "kinesis-logback-appender" % "1.4.2"
+  "org.scala-lang.modules" %% "scala-xml" % "1.1.0"
 )
 
 enablePlugins(RiffRaffArtifact)
