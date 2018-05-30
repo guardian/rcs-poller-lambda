@@ -13,13 +13,11 @@ import scala.xml.{ Elem, XML }
 object XMLOps extends Config with Logging {
   def fetchXml: Future[Unit] = wsClient.url(rcsUrl).withQueryStringParameters(("lastid", "26400822"), ("subscribername", "TEST")).get().map { result =>
     result.status match {
-      case 200 => logger.info(result.body)
-      case status =>
-        logger.error(s"Error fetching RCS updates: $status ${result.body}. Trying to read from S3 file instead...")
-        //TODO: Remove once the RCS endpoint is done
-        val json = xmlToJson(loadXmlFromS3)
-        logger.info(s"Rights JSON: $json")
+      case 200 =>
+        val xml = XML.load(result.body)
+        val json = xmlToJson(Some(xml))
         SNS.publish(json)
+      case status => logger.error(s"Error fetching RCS updates. Status: $status; Message: ${result.body}.")
     }
   }
 
