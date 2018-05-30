@@ -9,7 +9,7 @@ import com.gu.rcspollerlambda.S3._
 
 import scala.util.Try
 
-trait Config {
+trait Config extends Logging {
   val awsRegion = Regions.EU_WEST_1
   val stage = Option(System.getenv("Stage")).getOrElse("DEV")
 
@@ -28,11 +28,16 @@ trait Config {
   lazy val elkLoggingEnabled = stage != "DEV"
 
   private def loadConfig() = {
-    val configFileKey = s"$stage/config.properties"
-    val configInputStream = s3Client.getObject("rcs-poller-lambda-config", configFileKey)
-    val context2 = configInputStream.getObjectContent
     val configFile: Properties = new Properties()
-    Try(configFile.load(context2)) orElse sys.error("Could not load config file from s3. This lambda will not run.")
-    configFile
+    try {
+      val configInputStream = s3Client.getObject("rcs-poller-lambda-config", s"$stage/config.properties")
+      val context2 = configInputStream.getObjectContent
+      Try(configFile.load(context2)) orElse sys.error("Could not load config file from s3. This lambda will not run.")
+      configFile
+    } catch {
+      case e: Throwable =>
+        logger.info(s"Error while getting config from S3 bucket: $e")
+        configFile
+    }
   }
 }

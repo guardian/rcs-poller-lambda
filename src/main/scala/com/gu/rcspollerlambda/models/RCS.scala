@@ -13,39 +13,44 @@ case class RightsBatch(rightsUpdates: Seq[RCSUpdate], lastPosition: Option[Long]
 object RightsBatch {
   implicit val encoder: Encoder[RightsBatch] = deriveEncoder[RightsBatch]
 
-  def apply(tagsSets: Elem): RightsBatch = {
+  def apply(tagsSetsOpt: Option[Elem]): RightsBatch = {
+    tagsSetsOpt match {
+      case Some(tagsSets) =>
+        logger.info(s"fetched ${tagsSets.length} tag sets")
 
-    logger.info(s"fetched ${tagsSets.length} tag sets")
+        val rightsUpdates = for (ts <- tagsSets) yield {
+          val tagSetId = (ts \ "@tagSetId").headOption.map(_.text).map(_.toLong)
 
-    val rightsUpdates = for (ts <- tagsSets) yield {
-      val tagSetId = (ts \ "@tagSetId").headOption.map(_.text).map(_.toLong)
-
-      val rights = for (r <- ts \ "rights" \ "right") yield {
-        val code = (r \ "rightCode").text
-        val acquired = (r \ "acquired").text == "Y"
-        val properties = for (p <- r \ "properties" \ "property") yield {
-          val pCode = (p \ "propertyCode").text
-          val pExpiresOn = (p \ "expiresOn").headOption.map { dtNode =>
-            new DateTime(dtNode.text)
+          val rights = for (r <- ts \ "rights" \ "right") yield {
+            val code = (r \ "rightCode").text
+            val acquired = (r \ "acquired").text == "Y"
+            val properties = for (p <- r \ "properties" \ "property") yield {
+              val pCode = (p \ "propertyCode").text
+              val pExpiresOn = (p \ "expiresOn").headOption.map { dtNode =>
+                new DateTime(dtNode.text)
+              }
+              val pValue = (p \ "value").text
+              val pValueOpt = if (pValue == "") None else Some(pValue)
+              Property(pCode, pExpiresOn, pValueOpt)
+            }
+            RightAcquisition(code, acquired, properties)
           }
-          val pValue = (p \ "value").text
-          val pValueOpt = if (pValue == "") None else Some(pValue)
-          Property(pCode, pExpiresOn, pValueOpt)
+
+          val id = (ts \ "id").text
+          val supplierName = (ts \ "supplierName").text
+          val supplierId = (ts \ "supplierID").text
+          val prAgreement = (ts \ "prAgreement").text == "Y"
+
+          RCSUpdate(tagSetId.get, id, supplierName, supplierId, prAgreement, rights)
         }
-        RightAcquisition(code, acquired, properties)
-      }
 
-      val id = (ts \ "id").text
-      val supplierName = (ts \ "supplierName").text
-      val supplierId = (ts \ "supplierID").text
-      val prAgreement = (ts \ "prAgreement").text == "Y"
+        val lastPosition = rightsUpdates.lastOption.map(_.tagSetId)
 
-      RCSUpdate(tagSetId.get, id, supplierName, supplierId, prAgreement, rights)
+        RightsBatch(rightsUpdates, lastPosition)
+
+      case None => RightsBatch(Nil, None)
     }
 
-    val lastPosition = rightsUpdates.lastOption.map(_.tagSetId)
-
-    RightsBatch(rightsUpdates, lastPosition)
   }
 }
 

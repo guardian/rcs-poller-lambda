@@ -20,20 +20,26 @@ object XMLOps extends Config {
       SNS.publish(json)
   }
 
-  def xmlToJson(tagsSets: Elem): Json = {
+  def xmlToJson(tagsSets: Option[Elem]): Json = {
     val rb = RightsBatch(tagsSets)
     logger.info(s"Extracted rights from XML $rb")
     rb.asJson
   }
 
   // For DEV only
-  def loadXmlFromS3: Elem = {
-    val xmlInputStream = s3Client.getObject("rcs-poller-lambda-config", "example.xml")
-    logger.info(s"Loading XML from S3 bucket: ${xmlInputStream.getBucketName}/${xmlInputStream.getKey}")
-    val content = xmlInputStream.getObjectContent
+  def loadXmlFromS3: Option[Elem] = {
+    try {
+      val xmlInputStream = s3Client.getObject("rcs-poller-lambda-config", "example.xml")
+      logger.info(s"Loading XML from S3 bucket: ${xmlInputStream.getBucketName}/${xmlInputStream.getKey}")
+      val content = xmlInputStream.getObjectContent
 
-    val xml = XML.load(content)
-    logger.info(xml.toString())
-    xml
+      val xml = XML.load(content)
+      logger.info(xml.toString())
+      Some(xml)
+    } catch {
+      case e: Throwable =>
+        logger.info(s"Error while getting example xml from S3 bucket: $e")
+        None
+    }
   }
 }
