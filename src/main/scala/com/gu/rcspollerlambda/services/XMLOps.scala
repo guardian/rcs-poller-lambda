@@ -7,18 +7,20 @@ import io.circe.Json
 import io.circe.syntax._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{ Failure, Success }
+import scala.concurrent.Future
 import scala.xml.{ Elem, XML }
 
 object XMLOps extends Config with Logging {
-  def fetchXml = wsClient.url(rcsUrl).withQueryStringParameters(("lastid", "26400822"), ("subscribername", "TEST")).get().onComplete {
-    case Success(result) => logger.info(result.body)
-    case Failure(err) =>
-      logger.error(s"Error fetching RCS updates: ${err.getMessage}. Trying to read from S3 file instead...")
-      //TODO: Remove once the RCS endpoint is done
-      val json = xmlToJson(loadXmlFromS3)
-      logger.info(s"Rights JSON: $json")
-      SNS.publish(json)
+  def fetchXml: Future[Unit] = wsClient.url(rcsUrl).withQueryStringParameters(("lastid", "26400822"), ("subscribername", "TEST")).get().map { result =>
+    result.status match {
+      case 200 => logger.info(result.body)
+      case status =>
+        logger.error(s"Error fetching RCS updates: $status ${result.body}. Trying to read from S3 file instead...")
+        //TODO: Remove once the RCS endpoint is done
+        val json = xmlToJson(loadXmlFromS3)
+        logger.info(s"Rights JSON: $json")
+        SNS.publish(json)
+    }
   }
 
   def xmlToJson(tagsSets: Option[Elem]): Json = {

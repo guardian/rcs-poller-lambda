@@ -4,6 +4,9 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.config.Config
 import com.gu.rcspollerlambda.services.{ HTTP, Logging, XMLOps }
 
+import scala.concurrent.duration._
+import scala.concurrent.Await
+
 class LambdaInput() {
   var name: String = _
   def getName(): String = name
@@ -22,7 +25,7 @@ object Lambda extends Logging with HTTP with Config {
     case "DEV" =>
       val json = XMLOps.xmlToJson(XMLOps.loadXmlFromS3)
       logger.info(json.noSpaces)
-    case _ => XMLOps.fetchXml
+    case _ => Await.ready(XMLOps.fetchXml, 300.seconds)
   }
 }
 
