@@ -1,6 +1,8 @@
 package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
+import com.gu.rcspollerlambda.config.Config
+import com.gu.rcspollerlambda.services.{ HTTP, Logging, XMLOps }
 
 class LambdaInput() {
   var name: String = _

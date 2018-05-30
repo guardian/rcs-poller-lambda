@@ -1,4 +1,4 @@
-package com.gu.rcspollerlambda
+package com.gu.rcspollerlambda.services
 
 import org.slf4j.LoggerFactory
 

@@ -1,6 +1,7 @@
-package com.gu.rcspollerlambda
+package com.gu.rcspollerlambda.services
 
 import com.gu.rcspollerlambda.Lambda.wsClient
+import com.gu.rcspollerlambda.config.Config
 import com.gu.rcspollerlambda.models.RightsBatch
 import io.circe.Json
 import io.circe.syntax._

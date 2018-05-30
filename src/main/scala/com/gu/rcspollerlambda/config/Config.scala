@@ -1,11 +1,12 @@
-package com.gu.rcspollerlambda
+package com.gu.rcspollerlambda.config
 
 import java.util.Properties
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.auth._
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
-import com.gu.rcspollerlambda.S3._
+import com.gu.rcspollerlambda.services.Logging
+import com.gu.rcspollerlambda.services.S3._
 
 import scala.util.Try
 
