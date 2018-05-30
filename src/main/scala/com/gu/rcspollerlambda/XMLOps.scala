@@ -16,6 +16,7 @@ object XMLOps extends Config {
       logger.error(s"Error fetching RCS updates: ${err.getMessage}. Trying to read from S3 file instead...")
       //TODO: Remove once the RCS endpoint is done
       val json = xmlToJson(loadXmlFromS3)
+      logger.info(s"Rights JSON: $json")
       SNS.publish(json)
   }
 
