@@ -22,11 +22,10 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-sns" % awsVersion,
   "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
-  "com.gu" % "kinesis-logback-appender" % "1.4.2",
+  "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
-  "net.logstash.logback" % "logstash-logback-encoder" % "5.1",
   "org.scala-lang.modules" %% "scala-xml" % "1.1.0"
 )
 
