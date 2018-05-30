@@ -8,19 +8,15 @@ import net.logstash.logback.layout.LogstashLayout
 import org.slf4j.{ LoggerFactory, Logger => SLFLogger }
 
 trait Logging {
-  val logger: SLFLogger = LoggerFactory.getLogger(this.getClass)
-}
 
-object Logging {
-
-  private val rootLogger = LoggerFactory.getLogger(SLFLogger.ROOT_LOGGER_NAME).asInstanceOf[LogbackLogger]
+  val logger = LoggerFactory.getLogger(SLFLogger.ROOT_LOGGER_NAME).asInstanceOf[LogbackLogger]
 
   (sys.env.get("Stack"), sys.env.get("App"), sys.env.get("Stage")) match {
     case (Some(stack), Some(app), Some(stage)) =>
       val newAppender = createAppender(stack, app, stage)
 
       disableExistingAppender()
-      rootLogger.addAppender(newAppender)
+      logger.addAppender(newAppender)
 
     case _ =>
     // leave logging alone
@@ -36,7 +32,7 @@ object Logging {
   }
 
   private def createAppender(stack: String, app: String, stage: String) = {
-    val layout = setLayout(rootLogger.getLoggerContext, stack, app, stage)
+    val layout = setLayout(logger.getLoggerContext, stack, app, stage)
 
     val encoder = new LayoutWrappingEncoder[ILoggingEvent]
     encoder.setLayout(layout)
@@ -49,6 +45,6 @@ object Logging {
   }
 
   private def disableExistingAppender() = {
-    Option(rootLogger.getAppender("console")).foreach(_.stop())
+    Option(logger.getAppender("console")).foreach(_.stop())
   }
 }
