@@ -26,6 +26,9 @@ Parameters:
     Description: Bucket where RiffRaff uploads artifacts on deploy
     Type: String
     Default: composer-dist
+  GridSnsTopicArn:
+    Description: Rights updates will be sent to this SNS Topic
+    Type: String
 Resources:
   LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -77,6 +80,13 @@ Resources:
               Action:
                 - s3:GetObject
               Resource: arn:aws:s3:::rcs-poller-lambda-config/*
+        - PolicyName: SNSTopic
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref GridSnsTopicArn
   Lambda:
     Type: AWS::Lambda::Function
     Properties:

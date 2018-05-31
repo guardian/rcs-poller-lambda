@@ -14,7 +14,7 @@ object Lambda extends Logging with Config {
 
   def process(): Unit = {
     val lastId: String = S3.getLastId
-    logger.info(s"Lamda started with lastid=$lastId")
+    logger.info(s"Lambda started with lastid=$lastId")
 
     val result = for {
       body <- S3.getXmlFile
