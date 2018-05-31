@@ -14,6 +14,7 @@ object XMLOps extends Config with Logging {
   def fetchXml: Future[Unit] = wsClient.url(rcsUrl).withQueryStringParameters(("lastid", "26400822"), ("subscribername", "TEST")).get().map { result =>
     result.status match {
       case 200 =>
+        logger.info(s"Loading XML from response...")
         val xml = XML.load(result.body)
         val json = xmlToJson(Some(xml))
         SNS.publish(json)
@@ -22,9 +23,8 @@ object XMLOps extends Config with Logging {
   }
 
   def xmlToJson(tagsSets: Option[Elem]): Json = {
-    val rb = RightsBatch(tagsSets)
-    logger.info(s"Extracted rights from XML $rb")
-    rb.asJson
+    logger.info(s"Converting XML to Json...")
+    RightsBatch(tagsSets).asJson
   }
 
   // For DEV only
@@ -34,9 +34,7 @@ object XMLOps extends Config with Logging {
       logger.info(s"Loading XML from S3 bucket: ${xmlInputStream.getBucketName}/${xmlInputStream.getKey}")
       val content = xmlInputStream.getObjectContent
 
-      val xml = XML.load(content)
-      logger.info(xml.toString())
-      Some(xml)
+      Some(XML.load(content))
     } catch {
       case e: Throwable =>
         logger.info(s"Error while getting example xml from S3 bucket: $e")
