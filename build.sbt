@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
+  "io.circe" %% "circe-parser" % circeVersion,
   "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
   "org.slf4j" % "slf4j-log4j12" % "1.7.25"
 )

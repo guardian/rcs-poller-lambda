@@ -32,7 +32,7 @@ object RightsBatch {
           val pValueOpt = if (pValue == "") None else Some(pValue)
           Property(pCode, pExpiresOn, pValueOpt)
         }
-        RightAcquisition(code, acquired, properties)
+        RightAcquisition(code, acquired, if (properties.isEmpty) None else Some(properties))
       }
 
       val id = (ts \ "mediaId").text
@@ -54,7 +54,7 @@ object RCSUpdate {
   implicit val encoder: Encoder[RCSUpdate] = deriveEncoder[RCSUpdate]
 }
 
-case class RightAcquisition(code: String, acquired: Boolean, properties: Seq[Property])
+case class RightAcquisition(code: String, acquired: Boolean, properties: Option[Seq[Property]])
 object RightAcquisition {
   implicit val encoder: Encoder[RightAcquisition] = deriveEncoder[RightAcquisition]
 }
