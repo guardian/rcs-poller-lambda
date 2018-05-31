@@ -2,18 +2,9 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.services.{ HTTP, Logging, XMLOps }
+import com.gu.rcspollerlambda.services._
 
-import scala.concurrent.duration._
-import scala.concurrent.Await
-
-class LambdaInput() {
-  var name: String = _
-  def getName(): String = name
-  def setName(theName: String): Unit = name = theName
-}
-
-object Lambda extends Logging with HTTP with Config {
+object Lambda extends Logging with Config {
   /*
    * This is your lambda entry point
    */
@@ -23,9 +14,23 @@ object Lambda extends Logging with HTTP with Config {
 
   def process(): Unit = stage match {
     case "DEV" =>
-      val json = XMLOps.xmlToJson(XMLOps.loadXmlFromS3)
-      logger.info("Done!")
-    case _ => Await.ready(XMLOps.fetchXml, 120.seconds)
+      val result = for {
+        body <- S3.getXmlFile
+        xml <- XMLOps.stringToXml(body)
+        json <- XMLOps.xmlToJson(xml)
+        _ <- SNS.publish(json)
+      } yield ()
+      result.fold(err => logger.error(err), _ => logger.info(s"Lambda run successfully."))
+    case _ =>
+      val lastId: String = S3.getLastId
+      logger.info(s"Lamda started with lastid=$lastId")
+      val result = for {
+        body <- HTTP.getXml(lastId)
+        xml <- XMLOps.stringToXml(body)
+        json <- XMLOps.xmlToJson(xml)
+        _ <- SNS.publish(json)
+      } yield ()
+      result.fold(err => logger.error(err), _ => logger.info(s"Lambda run successfully."))
   }
 }
 

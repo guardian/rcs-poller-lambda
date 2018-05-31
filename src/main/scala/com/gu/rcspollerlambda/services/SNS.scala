@@ -1,20 +1,12 @@
 package com.gu.rcspollerlambda.services
 
 import com.amazonaws.services.sns.model.PublishRequest
-import com.amazonaws.services.sns.{ AmazonSNS, AmazonSNSClientBuilder }
 import com.gu.rcspollerlambda.config.Config
 import io.circe.Json
 
 object SNS extends Config with Logging {
-  private lazy val client: AmazonSNS = AmazonSNSClientBuilder.standard()
-    .withRegion(awsRegion)
-    .withCredentials(awsCredentials).build()
-
-  private val topicArn: String = "arn:aws:sns:eu-west-1:563563610310:media-service-DEV-Topic-5J6RZB9IFC38"
-
-  def publish(message: Json) {
-    logger.info(s"Sending json to SNS stream: $message")
-    val result = client.publish(new PublishRequest(topicArn, message.toString(), "update-rcs-rights"))
-    logger.info(s"Sent to SNS: $result")
+  def publish(message: Json): Either[String, Unit] = {
+    logger.info(s"Sending json to SNS stream...")
+    try { Right(AWS.snsClient.publish(new PublishRequest(AWS.topicArn, message.toString(), "update-rcs-rights"))) } catch { case e: Throwable => Left(s"Error while sending message to SNS: ${e.getMessage}") }
   }
 }

@@ -1,10 +1,19 @@
 package com.gu.rcspollerlambda.services
 
-import com.amazonaws.auth.AWSCredentialsProviderChain
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.s3.{ AmazonS3, AmazonS3ClientBuilder }
+import com.amazonaws.services.s3.model.S3ObjectInputStream
+import com.gu.rcspollerlambda.config.Config
 
-object S3 {
-  def getS3Client(credentialsProviderChain: AWSCredentialsProviderChain): AmazonS3 =
-    AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(credentialsProviderChain).build()
+object S3 extends Config {
+  // For DEV only
+  def getXmlFile: Either[String, S3ObjectInputStream] = {
+    try {
+      val xmlInputStream = AWS.s3Client.getObject("rcs-poller-lambda-config", "example.xml")
+      logger.info(s"Loading XML from S3 bucket: ${xmlInputStream.getBucketName}/${xmlInputStream.getKey}")
+
+      Right(xmlInputStream.getObjectContent)
+    } catch {
+      case e: Throwable => Left(s"Error while downloading XML file: ${e.getMessage}")
+    }
+  }
+  def getLastId = "26400822"
 }
