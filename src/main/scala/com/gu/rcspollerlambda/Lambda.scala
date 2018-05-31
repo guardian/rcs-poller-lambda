@@ -25,7 +25,7 @@ object Lambda extends Logging with HTTP with Config {
     case "DEV" =>
       val json = XMLOps.xmlToJson(XMLOps.loadXmlFromS3)
       logger.info("Done!")
-    case _ => Await.ready(XMLOps.fetchXml, 60.seconds)
+    case _ => Await.ready(XMLOps.fetchXml, 120.seconds)
   }
 }
 

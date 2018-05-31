@@ -110,7 +110,7 @@ Resources:
       MemorySize: 512
       Role: !GetAtt ExecutionRole.Arn
       Runtime: java8
-      Timeout: 60
+      Timeout: 120
 
   RateEvent:
     Type: AWS::Events::Rule
