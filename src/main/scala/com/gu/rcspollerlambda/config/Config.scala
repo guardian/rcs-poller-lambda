@@ -42,7 +42,7 @@ trait Config extends Logging {
       configFile
     } catch {
       case e: Throwable =>
-        logger.error(s"Error while getting config from S3 bucket: $e")
+        logger.error(s"Error while getting config from S3 bucket: ${e.getMessage}")
         configFile
     }
   }
