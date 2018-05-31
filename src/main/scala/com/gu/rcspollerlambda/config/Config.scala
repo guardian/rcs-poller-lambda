@@ -24,7 +24,7 @@ trait Config extends Logging {
     lazy val s3Client: AmazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).withCredentials(awsCredentials).build()
     lazy val snsClient: AmazonSNS = AmazonSNSClientBuilder.standard().withRegion(awsRegion).withCredentials(awsCredentials).build()
 
-    lazy val topicArn: String = "arn:aws:sns:eu-west-1:563563610310:media-service-DEV-Topic-5J6RZB9IFC38"
+    lazy val topicArn: String = getConfig("sns.topic.arn")
   }
 
   lazy val stage: String = Option(System.getenv("Stage")).getOrElse("DEV")
