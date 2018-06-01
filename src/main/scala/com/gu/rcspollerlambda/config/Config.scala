@@ -1,5 +1,7 @@
 package com.gu.rcspollerlambda.config
 
+import java.util.Properties
+
 import com.amazonaws.auth._
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
@@ -30,6 +32,10 @@ trait Config extends Logging {
 
   lazy val rcsUrl: String = getConfig("rcs.url")
 
-  private lazy val config = S3.loadConfig()
-  private def getConfig(property: String) = Option(config.getProperty(property)) getOrElse sys.error(s"'$property' property missing.")
+  private lazy val config: Either[LambdaError, Properties] = S3.loadConfig()
+  private def getConfig(property: String): String = {
+    config
+      .map(c => Option(c.getProperty(property)).getOrElse(sys.error(s"'$property' property missing.")))
+      .fold(err => sys.error(err.message), identity)
+  }
 }

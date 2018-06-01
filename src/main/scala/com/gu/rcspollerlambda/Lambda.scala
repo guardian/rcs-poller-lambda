@@ -26,10 +26,10 @@ object Lambda extends Logging with Config {
     newLastId.fold(
       err => {
         // TODO: Alert on error
-        logger.error(err)
+        logger.error(err.message)
       },
       lastid => {
-        // TODO: Save lastid to db
+        // TODO: Save lastid to db (once endpoint is ready)
         logger.info(s"Lambda run successfully.")
       })
   }
