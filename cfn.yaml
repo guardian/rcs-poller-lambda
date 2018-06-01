@@ -29,6 +29,9 @@ Parameters:
   GridSnsTopicArn:
     Description: Rights updates will be sent to this SNS Topic
     Type: String
+  DynamoDbTableName:
+    Description: DynamoDb table name where the lastid is stored
+    Type: String
 Resources:
   LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -87,6 +90,16 @@ Resources:
               Action:
                 - sns:Publish
               Resource: !Ref GridSnsTopicArn
+        - PolicyName: DynamoDbTable
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+              Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}*
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
