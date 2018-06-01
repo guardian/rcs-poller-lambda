@@ -1,5 +1,6 @@
 package com.gu.rcspollerlambda.models
 
+import cats.implicits._
 import cats.syntax.either._
 import com.gu.rcspollerlambda.services.XMLOps.logger
 import io.circe.generic.semiauto.deriveEncoder
@@ -50,11 +51,13 @@ object RightsBatch {
     RightsBatch(rightsUpdates, lastPosition)
   }
 
-  def toJson(rightsBatch: Seq[RCSUpdate]): Either[String, Json] = {
+  def toJson(rightsBatch: Seq[RCSUpdate]): Either[String, List[Json]] = {
     logger.info(s"Converting Seq[RCSUpdate] to Json...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
-    val stringWithNoNulls = printer.pretty(rightsBatch.asJson)
-    parse(stringWithNoNulls).leftMap(parsingFailure => s"Error while converting XML to JSON: ${parsingFailure.getMessage()}")
+    rightsBatch.map { rcsUpdate =>
+      val stringWithNoNulls = printer.pretty(rcsUpdate.asJson)
+      parse(stringWithNoNulls).leftMap(parsingFailure => s"Error while converting XML to JSON: ${parsingFailure.getMessage()}")
+    }.toList.sequence
   }
 }
 
