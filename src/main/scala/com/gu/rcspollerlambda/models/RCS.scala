@@ -1,9 +1,11 @@
 package com.gu.rcspollerlambda.models
 
-import com.gu.rcspollerlambda.Lambda.logger
+import cats.syntax.either._
+import com.gu.rcspollerlambda.services.XMLOps.logger
 import io.circe.generic.semiauto.deriveEncoder
+import io.circe.parser.parse
 import io.circe.syntax._
-import io.circe.{ Encoder, Json }
+import io.circe.{ Encoder, Json, Printer }
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{ DateTime, DateTimeZone }
 
@@ -46,6 +48,15 @@ object RightsBatch {
     val lastPosition = rightsUpdates.lastOption.map(_.tagSetId)
 
     RightsBatch(rightsUpdates, lastPosition)
+  }
+
+  def toJson(rightsBatch: RightsBatch): Either[String, Json] = {
+    logger.info(s"Converting RightsBatch to Json...")
+    try {
+      val printer = Printer.noSpaces.copy(dropNullValues = true)
+      val stringWithNoNulls = printer.pretty(rightsBatch.asJson)
+      parse(stringWithNoNulls).leftMap(parsingFailure => s"Error while parsing JSON: ${parsingFailure.getMessage()}")
+    } catch { case e: Throwable => Left(s"Error while converting XML to JSON: ${e.getMessage}") }
   }
 }
 

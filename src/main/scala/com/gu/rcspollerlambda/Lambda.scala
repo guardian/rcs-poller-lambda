@@ -2,28 +2,36 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.config.Config
+import com.gu.rcspollerlambda.models.RightsBatch
 import com.gu.rcspollerlambda.services._
 
 object Lambda extends Logging with Config {
   /*
-   * This is your lambda entry point
+   * This is the lambda entry point
    */
   def handler(context: Context): Unit = {
     process()
   }
 
   def process(): Unit = {
-    val lastId: String = S3.getLastId
-    logger.info(s"Lambda started with lastid=$lastId")
-
-    val result = for {
+    val lastPosition = for {
+      lastid <- DynamoDB.getLastId
       body <- S3.getXmlFile
       xml <- XMLOps.stringToXml(body)
-      json <- XMLOps.xmlToJson(xml)
+      rb <- XMLOps.xmlToRightsBatch(xml)
+      json <- RightsBatch.toJson(rb)
       _ <- SNS.publish(json)
-    } yield ()
+    } yield rb.lastPosition
 
-    result.fold(err => logger.error(err), _ => logger.info(s"Lambda run successfully."))
+    lastPosition.fold(
+      err => {
+        // TODO: Alert on error
+        logger.error(err)
+      },
+      lastid => {
+        // TODO: Save lastid to db
+        logger.info(s"Lambda run successfully.")
+      })
   }
 }
 
