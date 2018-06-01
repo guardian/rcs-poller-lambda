@@ -14,16 +14,16 @@ object Lambda extends Logging with Config {
   }
 
   def process(): Unit = {
-    val lastPosition = for {
+    val newLastId = for {
       lastid <- DynamoDB.getLastId
-      body <- S3.getXmlFile
+      body <- S3.getXmlFile // TODO: Use HTTP.getXml(lastid) when endpoint is ready
       xml <- XMLOps.stringToXml(body)
       rb <- XMLOps.xmlToRightsBatch(xml)
-      json <- RightsBatch.toJson(rb)
+      json <- RightsBatch.toJson(rb.rightsUpdates)
       _ <- SNS.publish(json)
     } yield rb.lastPosition
 
-    lastPosition.fold(
+    newLastId.fold(
       err => {
         // TODO: Alert on error
         logger.error(err)

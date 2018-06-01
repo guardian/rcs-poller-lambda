@@ -50,13 +50,11 @@ object RightsBatch {
     RightsBatch(rightsUpdates, lastPosition)
   }
 
-  def toJson(rightsBatch: RightsBatch): Either[String, Json] = {
-    logger.info(s"Converting RightsBatch to Json...")
-    try {
-      val printer = Printer.noSpaces.copy(dropNullValues = true)
-      val stringWithNoNulls = printer.pretty(rightsBatch.asJson)
-      parse(stringWithNoNulls).leftMap(parsingFailure => s"Error while parsing JSON: ${parsingFailure.getMessage()}")
-    } catch { case e: Throwable => Left(s"Error while converting XML to JSON: ${e.getMessage}") }
+  def toJson(rightsBatch: Seq[RCSUpdate]): Either[String, Json] = {
+    logger.info(s"Converting Seq[RCSUpdate] to Json...")
+    val printer = Printer.noSpaces.copy(dropNullValues = true)
+    val stringWithNoNulls = printer.pretty(rightsBatch.asJson)
+    parse(stringWithNoNulls).leftMap(parsingFailure => s"Error while converting XML to JSON: ${parsingFailure.getMessage()}")
   }
 }
 
