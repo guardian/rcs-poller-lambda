@@ -11,7 +11,7 @@ import io.circe.{ Encoder, Json, Printer }
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{ DateTime, DateTimeZone }
 
-import scala.xml.Elem
+import scala.xml.{ Elem, Node }
 
 case class RightsBatch(rightsUpdates: Seq[RCSUpdate], lastPosition: Option[Long])
 object RightsBatch {
@@ -25,29 +25,28 @@ object RightsBatch {
       val tagSetId = (ts \ "@tagSetId").headOption.map(_.text).map(_.toLong)
 
       val rights = for (r <- ts \ "rights" \ "right") yield {
-        val code = (r \ "rightCode").text
-        val acquired = (r \ "acquired").text == "Y"
+        val rightCode = (r \ "rightCode").text
+        val acquired = extractOptBoolean(r, "acquired")
         val properties = for (p <- r \ "properties" \ "property") yield {
-          val pCode = (p \ "propertyCode").text
-          val pExpiresOn = (p \ "expiresOn").headOption.map { dtNode =>
+          val propertyCode = (p \ "propertyCode").text
+          val expiresOn = (p \ "expiresOn").headOption.map { dtNode =>
             new DateTime(dtNode.text)
           }
-          val pValue = (p \ "value").text
-          val pValueOpt = if (pValue == "") None else Some(pValue)
-          Property(pCode, pExpiresOn, pValueOpt)
+          val pValue = extractOptString(p, "value")
+          Property(propertyCode, expiresOn, pValue)
         }
-        RightAcquisition(code, acquired, if (properties.isEmpty) None else Some(properties))
+        Right(rightCode, acquired, properties)
       }
 
       val id = (ts \ "mediaId").text
       val published = (ts \ "published").headOption.map { dtNode =>
         new DateTime(dtNode.text)
       }
-      val prAgreement = (ts \ "prAgreement").text == "Y"
+      val prAgreement = extractOptBoolean(ts, "prAgreement")
 
-      val suppliers = for (s <- ts \ "suppliers") yield {
-        val supplierId = (s \ "supplierID").text
-        val supplierName = (s \ "supplierName").text
+      val suppliers: Seq[Supplier] = for (s <- ts \ "suppliers" \ "supplier") yield {
+        val supplierId = extractOptString(s, "supplierId")
+        val supplierName = extractOptString(s, "supplierName")
         Supplier(supplierName, supplierId)
       }
 
@@ -67,28 +66,16 @@ object RightsBatch {
       parse(stringWithNoNulls).leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
     }.toList.sequence
   }
-}
 
-case class RCSUpdate(tagSetId: Long, id: String, published: Option[DateTime], suppliers: Seq[Supplier], prAgreement: Boolean, rights: Seq[RightAcquisition])
-object RCSUpdate {
-  import DateTimeFormatter._
-  implicit val encoder: Encoder[RCSUpdate] = deriveEncoder[RCSUpdate]
-}
+  private def extractOptString(node: Node, fieldName: String): Option[String] = (node \ fieldName).text match {
+    case "" => None
+    case value => Some(value)
+  }
 
-case class Supplier(supplierName: String, supplierId: String)
-object Supplier {
-  implicit val encoder: Encoder[Supplier] = deriveEncoder[Supplier]
-}
-
-case class RightAcquisition(rightCode: String, acquired: Boolean, properties: Option[Seq[Property]])
-object RightAcquisition {
-  implicit val encoder: Encoder[RightAcquisition] = deriveEncoder[RightAcquisition]
-}
-
-case class Property(propertyCode: String, expiresOn: Option[DateTime], value: Option[String])
-object Property {
-  import DateTimeFormatter._
-  implicit val encoder: Encoder[Property] = deriveEncoder[Property]
+  private def extractOptBoolean(node: Node, fieldName: String): Option[Boolean] = (node \ fieldName).text match {
+    case "" => None
+    case value => Some(value == "Y")
+  }
 }
 
 object DateTimeFormatter {
@@ -100,3 +87,26 @@ object DateTimeFormatter {
     }
   }
 }
+
+case class RCSUpdate(tagSetId: Long, id: String, published: Option[DateTime], suppliers: Seq[Supplier], prAgreement: Option[Boolean], rights: Seq[Right])
+object RCSUpdate {
+  import DateTimeFormatter._
+  implicit val encoder: Encoder[RCSUpdate] = deriveEncoder[RCSUpdate]
+}
+
+case class Supplier(supplierName: Option[String], supplierId: Option[String])
+object Supplier {
+  implicit val encoder: Encoder[Supplier] = deriveEncoder[Supplier]
+}
+
+case class Right(rightCode: String, acquired: Option[Boolean], properties: Seq[Property])
+object Right {
+  implicit val encoder: Encoder[Right] = deriveEncoder[Right]
+}
+
+case class Property(propertyCode: String, expiresOn: Option[DateTime], value: Option[String])
+object Property {
+  import DateTimeFormatter._
+  implicit val encoder: Encoder[Property] = deriveEncoder[Property]
+}
+
