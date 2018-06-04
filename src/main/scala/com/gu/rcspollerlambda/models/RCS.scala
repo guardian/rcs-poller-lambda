@@ -40,11 +40,18 @@ object RightsBatch {
       }
 
       val id = (ts \ "mediaId").text
-      val supplierName = (ts \ "supplierName").text
-      val supplierId = (ts \ "supplierID").text
+      val published = (ts \ "published").headOption.map { dtNode =>
+        new DateTime(dtNode.text)
+      }
       val prAgreement = (ts \ "prAgreement").text == "Y"
 
-      RCSUpdate(tagSetId.get, id, supplierName, supplierId, prAgreement, rights)
+      val suppliers = for (s <- ts \ "suppliers") yield {
+        val supplierId = (s \ "supplierID").text
+        val supplierName = (s \ "supplierName").text
+        Supplier(supplierName, supplierId)
+      }
+
+      RCSUpdate(tagSetId.get, id, published, suppliers, prAgreement, rights)
     }
 
     val lastPosition = rightsUpdates.lastOption.map(_.tagSetId)
@@ -62,9 +69,21 @@ object RightsBatch {
   }
 }
 
-case class RCSUpdate(tagSetId: Long, id: String, supplierName: String, supplierId: String, prAgreement: Boolean, contentRights: Seq[RightAcquisition])
+case class RCSUpdate(tagSetId: Long, id: String, published: Option[DateTime], suppliers: Seq[Supplier], prAgreement: Boolean, contentRights: Seq[RightAcquisition])
 object RCSUpdate {
+  private val formatter = ISODateTimeFormat.dateTime()
+  implicit val dateTimeEncoder = new Encoder[DateTime] {
+    def apply(d: DateTime): Json = {
+      val utc = d.withZone(DateTimeZone.UTC)
+      formatter.print(utc).asJson
+    }
+  }
   implicit val encoder: Encoder[RCSUpdate] = deriveEncoder[RCSUpdate]
+}
+
+case class Supplier(supplierName: String, supplierId: String)
+object Supplier {
+  implicit val encoder: Encoder[Supplier] = deriveEncoder[Supplier]
 }
 
 case class RightAcquisition(code: String, acquired: Boolean, properties: Option[Seq[Property]])
@@ -75,13 +94,21 @@ object RightAcquisition {
 case class Property(code: String, expiresOn: Option[DateTime], value: Option[String])
 object Property {
   private val formatter = ISODateTimeFormat.dateTime()
-
   implicit val dateTimeEncoder = new Encoder[DateTime] {
     def apply(d: DateTime): Json = {
       val utc = d.withZone(DateTimeZone.UTC)
       formatter.print(utc).asJson
     }
   }
-
   implicit val encoder: Encoder[Property] = deriveEncoder[Property]
+}
+
+object DateTimeEncoder {
+  private val formatter = ISODateTimeFormat.dateTime()
+  implicit val dateTimeEncoder = new Encoder[DateTime] {
+    def apply(d: DateTime): Json = {
+      val utc = d.withZone(DateTimeZone.UTC)
+      formatter.print(utc).asJson
+    }
+  }
 }
