@@ -50,7 +50,7 @@ object RightsBatch {
         Supplier(supplierName, supplierId)
       }
 
-      RCSUpdate(tagSetId.get, id, RCSData(published, suppliers, prAgreement, rights))
+      RCSUpdate(tagSetId.get, id, SyndicationRights(published, suppliers, prAgreement, rights))
     }
 
     val lastPosition = rightsUpdates.lastOption.map(_.tagSetId)
@@ -88,15 +88,15 @@ object DateTimeFormatter {
   }
 }
 
-case class RCSUpdate(tagSetId: Long, id: String, data: RCSData)
+case class RCSUpdate(tagSetId: Long, id: String, data: SyndicationRights)
 object RCSUpdate {
   implicit val encoder: Encoder[RCSUpdate] = deriveEncoder[RCSUpdate]
 }
 
-case class RCSData(published: Option[DateTime], suppliers: Seq[Supplier], prAgreement: Option[Boolean], rights: Seq[Right])
-object RCSData {
+case class SyndicationRights(published: Option[DateTime], suppliers: Seq[Supplier], prAgreement: Option[Boolean], rights: Seq[Right])
+object SyndicationRights {
   import DateTimeFormatter._
-  implicit val encoder: Encoder[RCSData] = deriveEncoder[RCSData]
+  implicit val encoder: Encoder[SyndicationRights] = deriveEncoder[SyndicationRights]
 }
 
 case class Supplier(supplierName: Option[String], supplierId: Option[String])
