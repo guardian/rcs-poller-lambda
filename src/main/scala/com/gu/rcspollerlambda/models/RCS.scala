@@ -42,15 +42,15 @@ object RightsBatch {
       val published = (ts \ "published").headOption.map { dtNode =>
         new DateTime(dtNode.text)
       }
-      val prAgreement = extractOptBoolean(ts, "prAgreement")
 
       val suppliers: Seq[Supplier] = for (s <- ts \ "suppliers" \ "supplier") yield {
         val supplierId = extractOptString(s, "supplierId")
         val supplierName = extractOptString(s, "supplierName")
-        Supplier(supplierName, supplierId)
+        val prAgreement = extractOptBoolean(s, "prAgreement")
+        Supplier(supplierName, supplierId, prAgreement)
       }
 
-      RCSUpdate(tagSetId.get, id, SyndicationRights(published, suppliers, prAgreement, rights))
+      RCSUpdate(tagSetId.get, id, SyndicationRights(published, suppliers, rights))
     }
 
     val lastPosition = rightsUpdates.lastOption.map(_.tagSetId)
@@ -93,13 +93,13 @@ object RCSUpdate {
   implicit val encoder: Encoder[RCSUpdate] = deriveEncoder[RCSUpdate]
 }
 
-case class SyndicationRights(published: Option[DateTime], suppliers: Seq[Supplier], prAgreement: Option[Boolean], rights: Seq[Right])
+case class SyndicationRights(published: Option[DateTime], suppliers: Seq[Supplier], rights: Seq[Right])
 object SyndicationRights {
   import DateTimeFormatter._
   implicit val encoder: Encoder[SyndicationRights] = deriveEncoder[SyndicationRights]
 }
 
-case class Supplier(supplierName: Option[String], supplierId: Option[String])
+case class Supplier(supplierName: Option[String], supplierId: Option[String], prAgreement: Option[Boolean])
 object Supplier {
   implicit val encoder: Encoder[Supplier] = deriveEncoder[Supplier]
 }
