@@ -2,7 +2,7 @@ package com.gu.rcspollerlambda.services
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.gu.rcspollerlambda.config.Config
+import com.gu.rcspollerlambda.config.{ Config, Switches }
 import com.gu.rcspollerlambda.models.{ LambdaError, RCSError }
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
@@ -18,7 +18,7 @@ object HTTP extends Config {
   implicit private val materializer = ActorMaterializer()
   val wsClient = StandaloneAhcWSClient()
 
-  def getXml(lastid: String): Either[LambdaError, String] = {
+  def getXml(lastid: String): Either[LambdaError, String] = Switches.rcsEnabled {
     logger.info(s"Fetching XML from $rcsUrl?lastid=$lastid&subscribername=TEST")
     try {
       Await.result(wsClient.url(rcsUrl).withQueryStringParameters(("lastid", lastid), ("subscribername", "TEST")).get().map { result =>

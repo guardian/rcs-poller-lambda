@@ -2,7 +2,7 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
+import com.gu.rcspollerlambda.models.RightsBatch
 import com.gu.rcspollerlambda.services._
 
 object Lambda extends Logging with Config {
@@ -16,7 +16,7 @@ object Lambda extends Logging with Config {
   def process(): Unit = {
     val newLastId = for {
       lastId <- DynamoDB.getLastId
-      body <- fetchXml(lastId)
+      body <- HTTP.getXml(lastId)
       xml <- XMLOps.stringToXml(body)
       rb <- XMLOps.xmlToRightsBatch(xml)
       json <- RightsBatch.toJson(rb.rightsUpdates)
@@ -28,15 +28,14 @@ object Lambda extends Logging with Config {
         // TODO: Alert on error
         logger.error(err.message)
       },
-      lastId => {
-        // TODO: Save lastId to db (once endpoint is ready)
-        logger.info(s"Lambda run successfully.")
+      {
+        case Some(id) =>
+          DynamoDB.saveLastId(id.toString)
+          logger.info(s"Lambda run successfully.")
+        case None =>
+          // TODO: Alert on error
+          logger.error(s"Missing id, lambda will run with the same last id again.")
       })
-  }
-
-  private def fetchXml(id: String): Either[LambdaError, String] = stage match {
-    case "PROD" => HTTP.getXml(id)
-    case _ => S3.getXmlFile
   }
 }
 
