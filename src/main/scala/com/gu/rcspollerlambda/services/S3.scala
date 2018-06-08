@@ -2,17 +2,18 @@ package com.gu.rcspollerlambda.services
 
 import java.util.Properties
 
-import com.amazonaws.services.s3.model.S3ObjectInputStream
-import com.gu.rcspollerlambda.config.{ Config, LambdaError, S3DownloadError }
+import com.gu.rcspollerlambda.config.Config
+import com.gu.rcspollerlambda.models.{ LambdaError, S3DownloadError }
 
 object S3 extends Config {
   // For DEV only
-  def getXmlFile: Either[LambdaError, S3ObjectInputStream] = {
+  def getXmlFile: Either[LambdaError, String] = {
     val file = "cs-poller-lambda-config/example.xml"
     logger.info(s"Loading XML from S3 bucket: $file")
     try {
-      val xmlInputStream = AWS.s3Client.getObject("rcs-poller-lambda-config", "example.xml")
-      Right(xmlInputStream.getObjectContent)
+      val xmlInputStream = AWS.s3Client.getObject("rcs-poller-lambda-config", "example.xml").getObjectContent
+      val xmlAsString = scala.io.Source.fromInputStream(xmlInputStream).getLines().mkString("\n")
+      Right(xmlAsString)
     } catch {
       case e: Throwable => Left(S3DownloadError(file, e.getMessage))
     }

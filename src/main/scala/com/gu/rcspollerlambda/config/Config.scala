@@ -8,6 +8,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder }
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3ClientBuilder }
 import com.amazonaws.services.sns.{ AmazonSNS, AmazonSNSClientBuilder }
+import com.gu.rcspollerlambda.models.LambdaError
 import com.gu.rcspollerlambda.services.{ Logging, S3 }
 
 trait Config extends Logging {
@@ -25,7 +26,7 @@ trait Config extends Logging {
     lazy val snsClient: AmazonSNS = AmazonSNSClientBuilder.standard.withRegion(awsRegion).withCredentials(awsCredentials).build()
 
     lazy val topicArn: String = getConfig("sns.topic.arn")
-    lazy val dynamoTableName: String = getConfig("dynamodb.table.name")
+    lazy val dynamoTableName: String = s"rcs-poller-lambda-$stage"
   }
 
   lazy val stage: String = Option(System.getenv("Stage")).getOrElse("DEV")

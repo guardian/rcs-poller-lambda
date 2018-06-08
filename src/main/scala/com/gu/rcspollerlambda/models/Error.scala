@@ -1,4 +1,4 @@
-package com.gu.rcspollerlambda.config
+package com.gu.rcspollerlambda.models
 
 sealed trait LambdaError {
   val message: String
@@ -10,6 +10,10 @@ case class DynamoReadError(err: String) extends LambdaError {
 
 case class S3DownloadError(file: String, err: String) extends LambdaError {
   override val message: String = s"Error while downloading file $file from S3: $err"
+}
+
+case class RCSError(status: Int, err: String) extends LambdaError {
+  override val message: String = s"Error fetching RCS updates. Responded with status: $status and message: $err"
 }
 
 case class XMLLoadingError(err: String) extends LambdaError {
