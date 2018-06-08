@@ -120,13 +120,13 @@ Resources:
       MemorySize: 512
       Role: !GetAtt ExecutionRole.Arn
       Runtime: java8
-      Timeout: 120
+      Timeout: 300
 
   RateEvent:
     Type: AWS::Events::Rule
     Properties:
       Description: Event sent to process the stream
-      ScheduleExpression: rate(2 minutes)
+      ScheduleExpression: rate(1 hour)
       Targets:
         - Id: Lambda
           Arn: !GetAtt Lambda.Arn

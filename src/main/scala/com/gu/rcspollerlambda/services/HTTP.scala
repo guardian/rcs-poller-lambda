@@ -20,12 +20,18 @@ object HTTP extends Config {
 
   def getXml(lastid: String): Either[LambdaError, String] = {
     logger.info(s"Fetching XML from $rcsUrl?lastid=$lastid&subscribername=TEST")
-    Await.result(wsClient.url(rcsUrl).withQueryStringParameters(("lastid", lastid), ("subscribername", "TEST")).get().map { result =>
-      logger.info(s"Result of GET request was ${result.status}")
-      result.status match {
-        case 200 => Right(result.body)
-        case status => Left(RCSError(status, result.body))
-      }
-    }, 120.seconds)
+    try {
+      Await.result(wsClient.url(rcsUrl).withQueryStringParameters(("lastid", lastid), ("subscribername", "TEST")).get().map { result =>
+        logger.info(s"Status of GET request was ${result.status}")
+        result.status match {
+          case 200 => Right(result.body)
+          case _ => Left(RCSError(result.body))
+        }
+      }, 4.minutes)
+    } catch {
+      case e: Throwable =>
+        wsClient.close()
+        Left(RCSError(e.getMessage))
+    }
   }
 }
