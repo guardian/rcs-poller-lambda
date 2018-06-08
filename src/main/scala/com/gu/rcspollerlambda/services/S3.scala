@@ -12,7 +12,7 @@ object S3 extends Config {
     logger.info(s"Loading XML from S3 bucket: $file")
     try {
       val xmlInputStream = AWS.s3Client.getObject("rcs-poller-lambda-config", "example.xml").getObjectContent
-      val xmlAsString = scala.io.Source.fromInputStream(xmlInputStream).getLines().mkString("")
+      val xmlAsString = scala.io.Source.fromInputStream(xmlInputStream).getLines().mkString("\n")
       Right(xmlAsString)
     } catch {
       case e: Throwable => Left(S3DownloadError(file, e.getMessage))

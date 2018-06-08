@@ -9,7 +9,7 @@ object XMLOps extends Config with Logging {
 
   def stringToXml(str: String): Either[LambdaError, Elem] = {
     logger.info("Loading XML from response body...")
-    try { Right(XML.load(str)) } catch { case e: Throwable => Left(XMLLoadingError(e.getMessage)) }
+    try { Right(XML.loadString(str)) } catch { case e: Throwable => Left(XMLLoadingError(e.getMessage)) }
   }
 
   def xmlToRightsBatch(rcsRightsFeed: Elem): Either[LambdaError, RightsBatch] = {
