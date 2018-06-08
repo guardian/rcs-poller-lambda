@@ -2,7 +2,8 @@ package com.gu.rcspollerlambda.services
 
 import cats.implicits._
 import com.amazonaws.services.sns.model.PublishRequest
-import com.gu.rcspollerlambda.config.{ Config, LambdaError, SNSPublishError }
+import com.gu.rcspollerlambda.config.Config
+import com.gu.rcspollerlambda.models.{ LambdaError, SNSPublishError }
 import io.circe.Json
 
 object SNS extends Config with Logging {

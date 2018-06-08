@@ -2,7 +2,6 @@ package com.gu.rcspollerlambda.models
 
 import cats.implicits._
 import cats.syntax.either._
-import com.gu.rcspollerlambda.config.{ ConversionError, LambdaError }
 import com.gu.rcspollerlambda.services.XMLOps.logger
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.parser.parse

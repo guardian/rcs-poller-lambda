@@ -2,7 +2,7 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.models.RightsBatch
+import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
 import com.gu.rcspollerlambda.services._
 
 object Lambda extends Logging with Config {
@@ -13,10 +13,15 @@ object Lambda extends Logging with Config {
     process()
   }
 
+  private def fetchXml(id: String): Either[LambdaError, String] = stage match {
+    case "PROD" => HTTP.getXml(id)
+    case _ => S3.getXmlFile
+  }
+
   def process(): Unit = {
     val newLastId = for {
       lastid <- DynamoDB.getLastId
-      body <- S3.getXmlFile // TODO: Use HTTP.getXml(lastid) when endpoint is ready
+      body <- fetchXml(lastid)
       xml <- XMLOps.stringToXml(body)
       rb <- XMLOps.xmlToRightsBatch(xml)
       json <- RightsBatch.toJson(rb.rightsUpdates)
