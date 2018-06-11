@@ -2,12 +2,12 @@ package com.gu.rcspollerlambda.services
 
 import cats.implicits._
 import com.amazonaws.services.sns.model.PublishRequest
-import com.gu.rcspollerlambda.config.Config
+import com.gu.rcspollerlambda.config.{ Config, Switches }
 import com.gu.rcspollerlambda.models.{ LambdaError, SNSPublishError }
 import io.circe.Json
 
 object SNS extends Config with Logging {
-  def publishRCSUpdates(rcsUpdates: List[Json]): Either[LambdaError, Unit] = {
+  def publishRCSUpdates(rcsUpdates: List[Json]): Either[LambdaError, Unit] = Switches.snsEnabled {
     logger.info(s"Sending ${rcsUpdates.length} json RCS updates to the SNS stream...")
     rcsUpdates.map(publish).sequence_
   }

@@ -8,7 +8,7 @@ object DynamoDB extends Config {
   case class LastId(id: String)
 
   def getLastId: Either[LambdaError, String] = {
-    logger.info(s"Reading lastid from the ${AWS.dynamoTableName} table...")
+    logger.info(s"Reading the last id from the ${AWS.dynamoTableName} table...")
     Scanamo.scanWithLimit[LastId](AWS.dynamoClient)(AWS.dynamoTableName, 1).headOption
       .getOrElse(Left(DynamoReadError("No id found in the table.")))
       .fold(dynamoReadError => Left(DynamoReadError(dynamoReadError.toString)), lastId => Right(lastId.id))

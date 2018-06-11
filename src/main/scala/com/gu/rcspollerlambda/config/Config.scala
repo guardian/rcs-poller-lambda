@@ -33,8 +33,8 @@ trait Config extends Logging {
 
   lazy val rcsUrl: String = getConfig("rcs.url")
 
-  lazy val rcsEnabled: Boolean = getConfig("rcs.enabled").toBoolean
-  lazy val snsEnabled: Boolean = getConfig("sns.enabled").toBoolean
+  lazy val isRcsEnabled: Boolean = getConfig("rcs.enabled").toBoolean
+  lazy val isSnsEnabled: Boolean = getConfig("sns.enabled").toBoolean
 
   private lazy val config: Either[LambdaError, Properties] = S3.loadConfig()
   private def getConfig(property: String): String = {
