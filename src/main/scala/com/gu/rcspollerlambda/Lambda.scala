@@ -25,7 +25,7 @@ object Lambda extends Logging with Config {
 
     newLastId.fold(
       err => {
-        // TODO: Alert on error
+        CloudWatch.publishError
         logger.error(err.message)
       },
       {
@@ -33,7 +33,7 @@ object Lambda extends Logging with Config {
           DynamoDB.saveLastId(id)
           logger.info(s"Lambda run successfully.")
         case None =>
-          // TODO: Alert on error
+          CloudWatch.publishError
           logger.error(s"Missing id, lambda will run with the same last id again.")
       })
   }

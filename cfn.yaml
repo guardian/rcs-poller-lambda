@@ -29,6 +29,9 @@ Parameters:
   GridSnsTopicArn:
     Description: Rights updates will be sent to this SNS Topic
     Type: String
+  AlarmTopic:
+    Description: SNS topic ARN for Cloudwatch alerts
+    Type: String
 
 Resources:
   LambdaSecurityGroup:
@@ -152,3 +155,18 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
+
+  Alarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub rcs-poller-${Stage}-alarm-errors
+      AlarmDescription: Alarm if there are any failures
+      Namespace: rcs-poller-alarms
+      MetricName: RCSPollerErrors
+      Statistic: Sum
+      ComparisonOperator: GreaterThanThreshold
+      Threshold: 0
+      Period: '300'
+      EvaluationPeriods: 1
+      AlarmActions:
+      - !Ref AlarmTopic

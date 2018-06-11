@@ -4,7 +4,9 @@ import java.util.Properties
 
 import com.amazonaws.auth._
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.regions.Regions
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
+import com.amazonaws.regions.{ Region, Regions }
+import com.amazonaws.services.cloudwatch.{ AmazonCloudWatch, AmazonCloudWatchAsyncClientBuilder }
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder }
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3ClientBuilder }
 import com.amazonaws.services.sns.{ AmazonSNS, AmazonSNSClientBuilder }
@@ -24,6 +26,9 @@ trait Config extends Logging {
     lazy val dynamoClient: AmazonDynamoDBAsync = AmazonDynamoDBAsyncClientBuilder.standard.withCredentials(awsCredentials).withRegion(awsRegion).build()
     lazy val s3Client: AmazonS3 = AmazonS3ClientBuilder.standard.withRegion(Regions.EU_WEST_1).withCredentials(awsCredentials).build()
     lazy val snsClient: AmazonSNS = AmazonSNSClientBuilder.standard.withRegion(awsRegion).withCredentials(awsCredentials).build()
+    lazy val cloudwatchClient = AmazonCloudWatchAsyncClientBuilder.standard
+      .withEndpointConfiguration(new EndpointConfiguration(Region.getRegion(awsRegion).getServiceEndpoint(AmazonCloudWatch.ENDPOINT_PREFIX), awsRegion.getName))
+      .build()
 
     lazy val topicArn: String = getConfig("sns.topic.arn")
     lazy val dynamoTableName: String = s"rcs-poller-lambda-$stage"
