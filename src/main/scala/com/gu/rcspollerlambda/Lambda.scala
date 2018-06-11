@@ -30,7 +30,7 @@ object Lambda extends Logging with Config {
       },
       {
         case Some(id) =>
-          DynamoDB.saveLastId(id.toString)
+          DynamoDB.saveLastId(id)
           logger.info(s"Lambda run successfully.")
         case None =>
           // TODO: Alert on error
