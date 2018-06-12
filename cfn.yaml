@@ -108,13 +108,13 @@ Resources:
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
               Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/rcs-poller-lambda-${Stage}*
-        - PolicyName: CloudWatch
+        - PolicyName: CloudWatchMetrics
           PolicyDocument:
             Statement:
               Effect: Allow
               Action:
                 - cloudwatch:PutMetricData
-              Resource: !Ref AlarmTopic
+              Resource: "*"
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
