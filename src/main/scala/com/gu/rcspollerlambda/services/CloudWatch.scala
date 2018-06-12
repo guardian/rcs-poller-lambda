@@ -19,6 +19,7 @@ object CloudWatch extends Logging with Config {
   }
 
   def publishError = {
+    logger.info(s"Sending error to CloudWatch...")
     val metric = new MetricDatum()
       .withValue(1D)
       .withMetricName(metricName)
@@ -29,7 +30,7 @@ object CloudWatch extends Logging with Config {
 
     Try(AWS.cloudwatchClient.putMetricDataAsync(request, LoggingAsyncHandler)).recover {
       case error =>
-        logger.warn(s"Failed to send cloudwatch metric data: ${error.getMessage}", error)
+        logger.warn(s"Failed to send CloudWatch metric data: ${error.getMessage}", error)
     }
   }
 }

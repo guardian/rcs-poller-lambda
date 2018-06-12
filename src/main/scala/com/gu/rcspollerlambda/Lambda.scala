@@ -2,7 +2,7 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.models.RightsBatch
+import com.gu.rcspollerlambda.models.{LambdaError, RightsBatch}
 import com.gu.rcspollerlambda.services._
 
 object Lambda extends Logging with Config {
@@ -14,7 +14,7 @@ object Lambda extends Logging with Config {
   }
 
   def process(): Unit = {
-    val newLastId = for {
+    val newLastId: Either[LambdaError, Option[Long]] = for {
       lastId <- DynamoDB.getLastId
       body <- HTTP.getXml(lastId)
       xml <- XMLOps.stringToXml(body)
