@@ -33,6 +33,13 @@ Parameters:
     Description: SNS topic ARN for Cloudwatch alerts
     Type: String
 
+Mappings:
+  Lambda:
+    CODE:
+      Rate: rate(1 minute)
+    PROD:
+      Rate: rate(1 hour)
+
 Resources:
   LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -129,7 +136,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: Event sent to process the stream
-      ScheduleExpression: rate(1 hour)
+      ScheduleExpression: !FindInMap [Lambda, !Ref 'Stage', Rate]
       Targets:
         - Id: Lambda
           Arn: !GetAtt Lambda.Arn
