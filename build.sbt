@@ -16,10 +16,11 @@ scalacOptions ++= Seq(
   "-Ypartial-unification"
 )
 
-val awsVersion = "1.11.338"
+val awsVersion = "1.11.344"
 val circeVersion = "0.9.3"
 
 libraryDependencies ++= Seq(
+  "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
   "com.amazonaws" % "aws-java-sdk-sns" % awsVersion,
   "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",

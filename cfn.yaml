@@ -29,6 +29,16 @@ Parameters:
   GridSnsTopicArn:
     Description: Rights updates will be sent to this SNS Topic
     Type: String
+  AlarmTopic:
+    Description: SNS topic ARN for Cloudwatch alerts
+    Type: String
+
+Mappings:
+  Lambda:
+    CODE:
+      Rate: rate(1 minute)
+    PROD:
+      Rate: rate(1 hour)
 
 Resources:
   LambdaSecurityGroup:
@@ -98,6 +108,13 @@ Resources:
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
               Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/rcs-poller-lambda-${Stage}*
+        - PolicyName: CloudWatch
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action:
+                - cloudwatch:PutMetricData
+              Resource: !Ref AlarmTopic
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -126,7 +143,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: Event sent to process the stream
-      ScheduleExpression: rate(1 hour)
+      ScheduleExpression: !FindInMap [Lambda, !Ref 'Stage', Rate]
       Targets:
         - Id: Lambda
           Arn: !GetAtt Lambda.Arn
@@ -152,3 +169,18 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
+
+  Alarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub rcs-poller-${Stage}-alarm-errors
+      AlarmDescription: Alarm if there are any failures
+      Namespace: rcs-poller-alarms
+      MetricName: RCSPollerErrors
+      Statistic: Sum
+      ComparisonOperator: GreaterThanThreshold
+      Threshold: 0
+      Period: '300'
+      EvaluationPeriods: 1
+      AlarmActions:
+      - !Ref AlarmTopic
