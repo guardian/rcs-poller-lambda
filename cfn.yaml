@@ -36,7 +36,7 @@ Parameters:
 Mappings:
   Lambda:
     CODE:
-      Rate: rate(1 minute)
+      Rate: rate(10 minutes)
     PROD:
       Rate: rate(1 hour)
 

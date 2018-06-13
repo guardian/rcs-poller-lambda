@@ -2,7 +2,7 @@ package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.models.{LambdaError, RightsBatch}
+import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
 import com.gu.rcspollerlambda.services._
 
 object Lambda extends Logging with Config {

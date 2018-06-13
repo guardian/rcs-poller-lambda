@@ -1,6 +1,6 @@
 package com.gu.rcspollerlambda.services
 
-import com.amazonaws.services.cloudwatch.model.{MetricDatum, PutMetricDataRequest}
+import com.amazonaws.services.cloudwatch.model.{ MetricDatum, PutMetricDataRequest }
 import com.gu.rcspollerlambda.config.Config
 
 import scala.util.Try
