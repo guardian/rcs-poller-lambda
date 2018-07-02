@@ -19,9 +19,9 @@ object HTTP extends Config {
   val wsClient = StandaloneAhcWSClient()
 
   def getXml(lastid: Long): Either[LambdaError, String] = Switches.rcsEnabled {
-    logger.info(s"Fetching XML from $rcsUrl?lastid=$lastid&subscribername=TEST")
+    logger.info(s"Fetching XML from $rcsUrl?lastid=$lastid&subscribername=$subscriberName")
     try {
-      Await.result(wsClient.url(rcsUrl).withQueryStringParameters(("lastid", lastid.toString), ("subscribername", "TEST")).get().map { result =>
+      Await.result(wsClient.url(rcsUrl).withQueryStringParameters(("lastid", lastid.toString), ("subscribername", subscriberName)).get().map { result =>
         logger.info(s"Status of GET request was ${result.status}")
         result.status match {
           case 200 => Right(result.body)
