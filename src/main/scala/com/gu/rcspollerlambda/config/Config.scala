@@ -37,6 +37,7 @@ trait Config extends Logging {
   lazy val stage: String = Option(System.getenv("Stage")).getOrElse("DEV")
 
   lazy val rcsUrl: String = getConfig("rcs.url")
+  lazy val subscriberName: String = getConfig("rcs.subscriber.name")
 
   lazy val isRcsEnabled: Boolean = getConfig("rcs.enabled").toBoolean
   lazy val isSnsEnabled: Boolean = getConfig("sns.enabled").toBoolean
