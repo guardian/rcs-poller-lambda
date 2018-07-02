@@ -33,8 +33,7 @@ object Lambda extends Logging with Config {
           DynamoDB.saveLastId(id)
           logger.info(s"Lambda run successfully.")
         case None =>
-          CloudWatch.publishError
-          logger.error(s"Missing id, lambda will run with the same last id again.")
+          logger.warn(s"Missing id, lambda will run with the same last id again.")
       })
   }
 }
