@@ -14,7 +14,7 @@ object SNS extends Config with Logging {
 
   private def publish(message: Json): Either[LambdaError, Unit] = {
     try {
-      Right(AWS.snsClient.publish(new PublishRequest(AWS.topicArn, message.noSpaces, "update-rcs-rights")))
+      Right(AWS.snsClient.publish(new PublishRequest(AWS.topicArn, message.noSpaces, "upsert-rcs-rights")))
     } catch {
       case e: Throwable => Left(SNSPublishError(message.hcursor.downField("id").as[String].right.get, e.getMessage))
     }
