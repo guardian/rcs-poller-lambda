@@ -92,7 +92,7 @@ object RCSUpdate {
   implicit val encoder: Encoder[RCSUpdate] = deriveEncoder[RCSUpdate]
 }
 
-case class SyndicationRights(published: Option[DateTime], suppliers: Seq[Supplier], rights: Seq[Right])
+case class SyndicationRights(published: Option[DateTime], suppliers: Seq[Supplier], rights: Seq[Right], isInferred: Boolean = false)
 object SyndicationRights {
   import DateTimeFormatter._
   implicit val encoder: Encoder[SyndicationRights] = deriveEncoder[SyndicationRights]
