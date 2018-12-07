@@ -38,7 +38,7 @@ Mappings:
     CODE:
       Rate: rate(10 minutes)
     PROD:
-      Rate: rate(1 hour)
+      Rate: rate(30 minutes)
 
 Resources:
   LambdaSecurityGroup:
@@ -137,7 +137,7 @@ Resources:
       MemorySize: 512
       Role: !GetAtt ExecutionRole.Arn
       Runtime: java8
-      Timeout: 300
+      Timeout: 900
 
   RateEvent:
     Type: AWS::Events::Rule
