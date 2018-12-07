@@ -27,7 +27,7 @@ object HTTP extends Config {
           case 200 => Right(result.body)
           case _ => Left(RCSError(result.body))
         }
-      }, 4.minutes)
+      }, 10.minutes)
     } catch {
       case e: Throwable =>
         wsClient.close()
