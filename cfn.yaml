@@ -134,7 +134,7 @@ Resources:
           App: !Ref App
       Description: A lambda to poll RCS
       Handler: com.gu.rcspollerlambda.Lambda::handler
-      MemorySize: 512
+      MemorySize: 1024
       Role: !GetAtt ExecutionRole.Arn
       Runtime: java8
       Timeout: 900
