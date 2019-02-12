@@ -5,7 +5,7 @@ import java.util.UUID
 import com.amazonaws.services.kinesis.model.PutRecordRequest
 import com.amazonaws.services.kinesis.{ AmazonKinesis, AmazonKinesisClientBuilder }
 import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.models.{ KinesisPublishError, LambdaError, SNSPublishError }
+import com.gu.rcspollerlambda.models.{ KinesisPublishError, LambdaError }
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax._
 import io.circe.{ Encoder, Json, Printer }
