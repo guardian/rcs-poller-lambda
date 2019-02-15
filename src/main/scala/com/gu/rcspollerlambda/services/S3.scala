@@ -23,7 +23,10 @@ object S3 extends Config {
     val file = s"rcs-poller-lambda-config/$stage/config.properties"
     try {
       val configFile: Properties = new Properties()
-      val configInputStream = AWS.s3Client.getObject("rcs-poller-lambda-config", s"$stage/config.properties")
+      val bucket = "rcs-poller-lambda-config"
+      val path = s"$stage/config.properties"
+      logger.info("Loading config from " + bucket + ":" + path)
+      val configInputStream = AWS.s3Client.getObject(bucket, path)
       val context2 = configInputStream.getObjectContent
       configFile.load(context2)
       Right(configFile)
