@@ -20,7 +20,7 @@ object Lambda extends Logging with Config {
       xml <- XMLOps.stringToXml(body)
       rb <- XMLOps.xmlToRightsBatch(xml)
       json <- RightsBatch.toJson(rb.rightsUpdates)
-      _ <- MessageSender.publishRCSUpdates(json)
+      _ <- SNS.publishRCSUpdates(json)
     } yield rb.lastPosition
 
     newLastId.fold(
