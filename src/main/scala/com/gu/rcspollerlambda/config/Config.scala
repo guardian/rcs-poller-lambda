@@ -31,8 +31,6 @@ trait Config extends Logging {
       .build()
 
     lazy val topicArn: String = getConfig("sns.topic.arn")
-    lazy val kinesisStream: String = getConfig("kinesis.stream")
-
     lazy val dynamoTableName: String = s"rcs-poller-lambda-$stage"
   }
 
