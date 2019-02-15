@@ -25,13 +25,13 @@ object HTTP extends Config {
         logger.info(s"Status of GET request was ${result.status}")
         result.status match {
           case 200 => Right(result.body)
-          case _ => Left(RCSError(result.body))
+          case _ => Left(RCSError(result.status  + ": " + result.body))
         }
       }, 10.minutes)
     } catch {
       case e: Throwable =>
         wsClient.close()
-        Left(RCSError(e.getMessage))
+        Left(RCSError(e.getClass.getCanonicalName + " / " + e.getMessage))
     }
   }
 }
