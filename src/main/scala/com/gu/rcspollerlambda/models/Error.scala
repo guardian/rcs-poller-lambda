@@ -27,3 +27,7 @@ case class ConversionError(err: String) extends LambdaError {
 case class SNSPublishError(id: String, err: String) extends LambdaError {
   override val message: String = s"Error while sending message to SNS for image id $id: $err"
 }
+
+case class KinesisPublishError(id: String, err: String) extends LambdaError {
+  override val message: String = s"Error while sending message to Kinesis for partition id $id: $err"
+}
