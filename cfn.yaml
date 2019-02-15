@@ -38,7 +38,7 @@ Mappings:
     CODE:
       Rate: rate(10 minutes)
     PROD:
-      Rate: rate(1 hour)
+      Rate: rate(10 minutes)
 
 Resources:
   LambdaSecurityGroup:
