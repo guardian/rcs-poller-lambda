@@ -1,9 +1,11 @@
 package com.gu.rcspollerlambda.services
 
+import java.io.{PrintWriter, StringWriter}
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.gu.rcspollerlambda.config.{ Config, Switches }
-import com.gu.rcspollerlambda.models.{ LambdaError, RCSError }
+import com.gu.rcspollerlambda.config.{Config, Switches}
+import com.gu.rcspollerlambda.models.{LambdaError, RCSError}
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.Await
@@ -31,7 +33,10 @@ object HTTP extends Config {
     } catch {
       case e: Throwable =>
         wsClient.close()
-        Left(RCSError(e.getClass.getCanonicalName + " / " + e.getMessage))
+
+        val fullStackTraceWriter = new StringWriter()
+        e.printStackTrace(new PrintWriter(fullStackTraceWriter))
+        Left(RCSError(e.getClass.getCanonicalName + " / " + fullStackTraceWriter.toString))
     }
   }
 }
