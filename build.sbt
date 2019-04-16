@@ -21,8 +21,9 @@ val circeVersion = "0.9.3"
 
 libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
-  "com.amazonaws" % "aws-java-sdk-sns" % awsVersion,
+  "com.amazonaws" % "amazon-kinesis-client" % "1.10.0",
   "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
+  "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
   "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0",
   "com.gu" %% "scanamo" % "1.0.0-M6",

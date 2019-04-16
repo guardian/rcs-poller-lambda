@@ -57,12 +57,18 @@ object RightsBatch {
     RightsBatch(rightsUpdates, lastPosition)
   }
 
-  def toJson(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[Json]] = {
+  def toJsonMessage(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[Json]] = {
     logger.info(s"Converting Seq[RCSUpdate] to Json...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
     rightsBatch.map { rcsUpdate =>
-      val stringWithNoNulls = printer.pretty(rcsUpdate.asJson)
-      parse(stringWithNoNulls).leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
+      val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
+      parse(stringWithNoNulls)
+        .map(json =>
+          Json.obj(
+            ("subject", Json.fromString("upsert-rcs-rights")),
+            ("id", Json.fromString(rcsUpdate.id)),
+            ("syndicationRights", json)))
+        .leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
     }.toList.sequence
   }
 

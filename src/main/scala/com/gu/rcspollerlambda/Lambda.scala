@@ -19,8 +19,8 @@ object Lambda extends Logging with Config {
       body <- HTTP.getXml(lastId)
       xml <- XMLOps.stringToXml(body)
       rb <- XMLOps.xmlToRightsBatch(xml)
-      json <- RightsBatch.toJson(rb.rightsUpdates)
-      _ <- SNS.publishRCSUpdates(json)
+      json <- RightsBatch.toJsonMessage(rb.rightsUpdates)
+      _ <- Kinesis.publishRCSUpdates(json)
     } yield rb.lastPosition
 
     newLastId.fold(

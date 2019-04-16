@@ -9,28 +9,40 @@ import com.amazonaws.regions.{ Region, Regions }
 import com.amazonaws.services.cloudwatch.{ AmazonCloudWatch, AmazonCloudWatchAsyncClientBuilder }
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder }
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3ClientBuilder }
-import com.amazonaws.services.sns.{ AmazonSNS, AmazonSNSClientBuilder }
 import com.gu.rcspollerlambda.models.LambdaError
 import com.gu.rcspollerlambda.services.{ Logging, S3 }
+import com.amazonaws.services.kinesis.{ AmazonKinesis, AmazonKinesisClient }
+import com.amazonaws.services.securitytoken.{ AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder }
+import com.amazonaws.services.securitytoken.model.{ AssumeRoleRequest, Credentials }
 
 trait Config extends Logging {
   object AWS {
     val awsRegion = Regions.EU_WEST_1
 
-    lazy val awsCredentials = new AWSCredentialsProviderChain(
+    lazy val awsComposerCredentials = new AWSCredentialsProviderChain(
       new EnvironmentVariableCredentialsProvider(),
       new ProfileCredentialsProvider("composer"),
-      new InstanceProfileCredentialsProvider(false),
-      new DefaultAWSCredentialsProviderChain)
+      new InstanceProfileCredentialsProvider(false))
 
-    lazy val dynamoClient: AmazonDynamoDBAsync = AmazonDynamoDBAsyncClientBuilder.standard.withCredentials(awsCredentials).withRegion(awsRegion).build()
-    lazy val s3Client: AmazonS3 = AmazonS3ClientBuilder.standard.withRegion(Regions.EU_WEST_1).withCredentials(awsCredentials).build()
-    lazy val snsClient: AmazonSNS = AmazonSNSClientBuilder.standard.withRegion(awsRegion).withCredentials(awsCredentials).build()
+    lazy val dynamoClient: AmazonDynamoDBAsync = AmazonDynamoDBAsyncClientBuilder.standard.withCredentials(awsComposerCredentials).withRegion(awsRegion).build()
+    lazy val s3Client: AmazonS3 = AmazonS3ClientBuilder.standard.withRegion(awsRegion).withCredentials(awsComposerCredentials).build()
     lazy val cloudwatchClient = AmazonCloudWatchAsyncClientBuilder.standard
+      .withCredentials(awsComposerCredentials)
       .withEndpointConfiguration(new EndpointConfiguration(Region.getRegion(awsRegion).getServiceEndpoint(AmazonCloudWatch.ENDPOINT_PREFIX), awsRegion.getName))
       .build()
 
-    lazy val topicArn: String = getConfig("sns.topic.arn")
+    lazy val roleArn: String = getConfig("role.arn")
+    lazy val stsClient: AWSSecurityTokenService = AWSSecurityTokenServiceClientBuilder.standard().withRegion(awsRegion).build()
+    lazy val roleCredentials: Credentials = stsClient.assumeRole(new AssumeRoleRequest()
+      .withRoleArn(roleArn)
+      .withRoleSessionName("cross-account-lambda-write-to-kinesis")).getCredentials
+    lazy val awsMediaServiceCredentials = new BasicSessionCredentials(roleCredentials.getAccessKeyId, roleCredentials.getSecretAccessKey, roleCredentials.getSessionToken)
+    lazy val kinesisClient: AmazonKinesis = AmazonKinesisClient.builder()
+      .withRegion(awsRegion)
+      .withCredentials(awsMediaServiceCredentials)
+      .build()
+
+    lazy val kinesisStreamName: String = getConfig("kinesis.stream")
     lazy val dynamoTableName: String = s"rcs-poller-lambda-$stage"
   }
 
@@ -40,12 +52,10 @@ trait Config extends Logging {
   lazy val subscriberName: String = getConfig("rcs.subscriber.name")
 
   lazy val isRcsEnabled: Boolean = getConfig("rcs.enabled").toBoolean
-  lazy val isSnsEnabled: Boolean = getConfig("sns.enabled").toBoolean
+  lazy val isKinesisEnabled: Boolean = getConfig("kinesis.enabled").toBoolean
 
   private lazy val config: Either[LambdaError, Properties] = S3.loadConfig()
-  private def getConfig(property: String): String = {
-    config
-      .map(c => Option(c.getProperty(property)).getOrElse(sys.error(s"'$property' property missing.")))
-      .fold(err => sys.error(err.message), identity)
-  }
+  private def getConfig(property: String): String = config
+    .map(c => Option(c.getProperty(property)).getOrElse(sys.error(s"'$property' property missing.")))
+    .fold(err => sys.error(err.message), identity)
 }
