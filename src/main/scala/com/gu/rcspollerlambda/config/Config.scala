@@ -39,7 +39,7 @@ trait Config extends Logging {
     lazy val awsMediaServiceCredentials = new BasicSessionCredentials(roleCredentials.getAccessKeyId, roleCredentials.getSecretAccessKey, roleCredentials.getSessionToken)
     lazy val kinesisClient: AmazonKinesis = AmazonKinesisClient.builder()
       .withRegion(awsRegion)
-      .withCredentials(awsMediaServiceCredentials)
+      .withCredentials(new AWSStaticCredentialsProvider(awsMediaServiceCredentials))
       .build()
 
     lazy val kinesisStreamName: String = getConfig("kinesis.stream")
