@@ -5,15 +5,15 @@ import java.util.Properties
 import com.amazonaws.auth._
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
-import com.amazonaws.regions.{ Region, Regions }
-import com.amazonaws.services.cloudwatch.{ AmazonCloudWatch, AmazonCloudWatchAsyncClientBuilder }
-import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder }
-import com.amazonaws.services.s3.{ AmazonS3, AmazonS3ClientBuilder }
+import com.amazonaws.regions.{Region, Regions}
+import com.amazonaws.services.cloudwatch.{AmazonCloudWatch, AmazonCloudWatchAsyncClientBuilder}
+import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder}
+import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClient}
+import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
+import com.amazonaws.services.securitytoken.model.{AssumeRoleRequest, Credentials}
+import com.amazonaws.services.securitytoken.{AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder}
 import com.gu.rcspollerlambda.models.LambdaError
-import com.gu.rcspollerlambda.services.{ Logging, S3 }
-import com.amazonaws.services.kinesis.{ AmazonKinesis, AmazonKinesisClient }
-import com.amazonaws.services.securitytoken.{ AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder }
-import com.amazonaws.services.securitytoken.model.{ AssumeRoleRequest, Credentials }
+import com.gu.rcspollerlambda.services.{Logging, S3}
 
 trait Config extends Logging {
   object AWS {
@@ -31,6 +31,7 @@ trait Config extends Logging {
       .withEndpointConfiguration(new EndpointConfiguration(Region.getRegion(awsRegion).getServiceEndpoint(AmazonCloudWatch.ENDPOINT_PREFIX), awsRegion.getName))
       .build()
 
+    // We need to assume sts role in order to send messages to the kinesis stream in the media-service
     lazy val roleArn: String = getConfig("role.arn")
     lazy val stsClient: AWSSecurityTokenService = AWSSecurityTokenServiceClientBuilder.standard().withRegion(awsRegion).build()
     lazy val roleCredentials: Credentials = stsClient.assumeRole(new AssumeRoleRequest()

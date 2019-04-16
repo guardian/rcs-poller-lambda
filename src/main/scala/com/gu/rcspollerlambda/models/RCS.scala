@@ -6,11 +6,11 @@ import com.gu.rcspollerlambda.services.XMLOps.logger
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.parser.parse
 import io.circe.syntax._
-import io.circe.{ Encoder, Json, Printer }
+import io.circe.{Encoder, Json, Printer}
 import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.{ DateTime, DateTimeZone }
+import org.joda.time.{DateTime, DateTimeZone}
 
-import scala.xml.{ Elem, Node }
+import scala.xml.{Elem, Node}
 
 case class RightsBatch(rightsUpdates: Seq[RCSUpdate], lastPosition: Option[Long])
 object RightsBatch {
