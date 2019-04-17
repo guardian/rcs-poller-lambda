@@ -1,18 +1,19 @@
 package com.gu.rcspollerlambda.services
 
-import java.io.{ PrintWriter, StringWriter }
+import java.io.{PrintWriter, StringWriter}
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.gu.rcspollerlambda.config.{ Config, Switches }
-import com.gu.rcspollerlambda.models.{ LambdaError, RCSError }
+import com.gu.rcspollerlambda.config.Config._
+import com.gu.rcspollerlambda.config.Switches
+import com.gu.rcspollerlambda.models.{LambdaError, RCSError}
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-object HTTP extends Config {
+object HTTP extends Logging {
   implicit private val system = ActorSystem()
   system.registerOnTermination {
     System.exit(0)

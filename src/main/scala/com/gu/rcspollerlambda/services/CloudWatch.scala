@@ -1,11 +1,11 @@
 package com.gu.rcspollerlambda.services
 
-import com.amazonaws.services.cloudwatch.model.{ MetricDatum, PutMetricDataRequest }
-import com.gu.rcspollerlambda.config.Config
+import com.amazonaws.services.cloudwatch.model.{MetricDatum, PutMetricDataRequest}
+import com.gu.rcspollerlambda.config.Config._
 
 import scala.util.Try
 
-object CloudWatch extends Logging with Config {
+object CloudWatch extends Logging {
   private val metricName = "RCSPollerErrors"
   private val namespace = "rcs-poller-alarms"
 

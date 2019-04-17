@@ -2,10 +2,10 @@ package com.gu.rcspollerlambda.services
 
 import java.util.Properties
 
-import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.models.{ LambdaError, S3DownloadError }
+import com.gu.rcspollerlambda.config.Config._
+import com.gu.rcspollerlambda.models.{LambdaError, S3DownloadError}
 
-object S3 extends Config {
+object S3 extends Logging {
   // For DEV only
   def getXmlFile: Either[LambdaError, String] = {
     val file = s"rcs-poller-lambda-config/$stage/example.xml"

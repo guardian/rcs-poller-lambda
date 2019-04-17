@@ -1,10 +1,10 @@
 package com.gu.rcspollerlambda.services
 
-import com.gu.rcspollerlambda.config.Config
-import com.gu.rcspollerlambda.models.{ DynamoReadError, LambdaError }
+import com.gu.rcspollerlambda.config.Config._
+import com.gu.rcspollerlambda.models.{DynamoReadError, LambdaError}
 import com.gu.scanamo.Scanamo
 
-object DynamoDB extends Config {
+object DynamoDB extends Logging {
   case class LastId(id: String = "lastid", value: Long)
 
   def getLastId: Either[LambdaError, Long] = {

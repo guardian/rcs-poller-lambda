@@ -12,9 +12,9 @@ import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClient}
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.amazonaws.services.securitytoken.{AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder}
 import com.gu.rcspollerlambda.models.LambdaError
-import com.gu.rcspollerlambda.services.{Logging, S3}
+import com.gu.rcspollerlambda.services.S3
 
-trait Config extends Logging {
+object Config {
   object AWS {
     val awsRegion = Regions.EU_WEST_1
 
@@ -53,9 +53,11 @@ trait Config extends Logging {
 
   lazy val stage: String = Option(System.getenv("Stage")).getOrElse("DEV")
 
+  //RCS endpoint
   lazy val rcsUrl: String = getConfig("rcs.url")
   lazy val subscriberName: String = getConfig("rcs.subscriber.name")
 
+  //Switches
   lazy val isRcsEnabled: Boolean = getConfig("rcs.enabled").toBoolean
   lazy val isKinesisEnabled: Boolean = getConfig("kinesis.enabled").toBoolean
 

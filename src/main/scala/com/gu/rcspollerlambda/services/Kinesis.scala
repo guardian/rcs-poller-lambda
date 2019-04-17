@@ -5,11 +5,12 @@ import java.util.UUID
 
 import cats.implicits._
 import com.amazonaws.services.kinesis.model.PutRecordRequest
-import com.gu.rcspollerlambda.config.{Config, Switches}
+import com.gu.rcspollerlambda.config.Config._
+import com.gu.rcspollerlambda.config.Switches
 import com.gu.rcspollerlambda.models.{KinesisPublishError, LambdaError}
 import io.circe.Json
 
-object Kinesis extends Config with Logging {
+object Kinesis extends Logging {
   def publishRCSUpdates(rcsUpdates: List[Json]): Either[LambdaError, Unit] = Switches.kinesisEnabled {
     logger.info(s"Sending ${rcsUpdates.length} json RCS update(s) to the Kinesis stream...")
     rcsUpdates.map(publish).sequence_
