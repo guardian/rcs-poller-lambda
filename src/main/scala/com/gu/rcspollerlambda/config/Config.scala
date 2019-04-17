@@ -47,7 +47,7 @@ trait Config extends Logging {
     // We need to assume sts role in order to get creds to send messages on the kinesis stream in the media-service account
     private def getMediaServiceCredentials: STSAssumeRoleSessionCredentialsProvider = {
       lazy val stsClient: AWSSecurityTokenService = AWSSecurityTokenServiceClientBuilder.standard().withRegion(awsRegion).build()
-      new STSAssumeRoleSessionCredentialsProvider.Builder().withStsClient(stsClient).build()
+      new STSAssumeRoleSessionCredentialsProvider.Builder(roleArn, "RCS-poller-lambda").withStsClient(stsClient).build()
     }
   }
 
