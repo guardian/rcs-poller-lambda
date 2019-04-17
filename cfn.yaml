@@ -29,6 +29,9 @@ Parameters:
   GridSnsTopicArn:
     Description: Rights updates will be sent to this SNS Topic
     Type: String
+  ComposerCrossAccountRoleArn:
+    Description: Role ARN for sending updates to Grid's Kinesis stream
+    Type: String
   AlarmTopic:
     Description: SNS topic ARN for Cloudwatch alerts
     Type: String
@@ -98,6 +101,12 @@ Resources:
               Action:
                 - sns:Publish
               Resource: !Ref GridSnsTopicArn
+        - PolicyName: KinesisStream
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action: sts:AssumeRole
+              Resource: !Ref ComposerCrossAccountRoleArn
         - PolicyName: DynamoDbTable
           PolicyDocument:
             Statement:

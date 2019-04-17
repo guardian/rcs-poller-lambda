@@ -1,11 +1,11 @@
 package com.gu.rcspollerlambda.services
 
-import java.io.{PrintWriter, StringWriter}
+import java.io.{ PrintWriter, StringWriter }
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.gu.rcspollerlambda.config.{Config, Switches}
-import com.gu.rcspollerlambda.models.{LambdaError, RCSError}
+import com.gu.rcspollerlambda.config.{ Config, Switches }
+import com.gu.rcspollerlambda.models.{ LambdaError, RCSError }
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.Await
@@ -27,7 +27,7 @@ object HTTP extends Config {
         logger.info(s"Status of GET request was ${result.status}")
         result.status match {
           case 200 => Right(result.body)
-          case _ => Left(RCSError(result.status  + ": " + result.body))
+          case _ => Left(RCSError(result.status + ": " + result.body))
         }
       }, 10.minutes)
     } catch {

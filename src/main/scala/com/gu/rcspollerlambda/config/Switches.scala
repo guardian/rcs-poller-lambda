@@ -11,10 +11,10 @@ object Switches extends Config with Logging {
       S3.getXmlFile
     }
 
-  def snsEnabled(action: => Either[LambdaError, Unit]): Either[LambdaError, Unit] =
-    if (isSnsEnabled) action
+  def kinesisEnabled(action: => Either[LambdaError, Unit]): Either[LambdaError, Unit] =
+    if (isKinesisEnabled) action
     else {
-      logger.info(s"Sending rights on the SNS stream is not enabled...")
+      logger.info(s"Sending rights on the Kinesis stream is not enabled...")
       Right(())
     }
 }
