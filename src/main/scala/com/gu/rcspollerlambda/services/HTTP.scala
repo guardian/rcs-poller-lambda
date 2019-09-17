@@ -33,7 +33,6 @@ object HTTP extends Logging {
       }, 2.minutes)
     } catch {
       case e: Throwable =>
-        wsClient.close()
         val fullStackTraceWriter = new StringWriter()
         e.printStackTrace(new PrintWriter(fullStackTraceWriter))
         Left(RCSError(e.getClass.getCanonicalName + " / " + fullStackTraceWriter.toString))
