@@ -1,7 +1,7 @@
 package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.gu.rcspollerlambda.models.{LambdaError, RightsBatch}
+import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
 import com.gu.rcspollerlambda.services._
 
 object Lambda extends Logging {
@@ -30,8 +30,10 @@ object Lambda extends Logging {
       {
         case Some(id) =>
           DynamoDB.saveLastId(id)
+          CloudWatch.publishOK
           logger.info(s"Lambda run successfully.")
         case None =>
+          CloudWatch.publishOK
           logger.warn(s"No new rights tags, lambda will run with the same last id again.")
       })
   }

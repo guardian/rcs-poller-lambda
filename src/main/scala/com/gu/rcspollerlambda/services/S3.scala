@@ -3,7 +3,7 @@ package com.gu.rcspollerlambda.services
 import java.util.Properties
 
 import com.gu.rcspollerlambda.config.Config._
-import com.gu.rcspollerlambda.models.{LambdaError, S3DownloadError}
+import com.gu.rcspollerlambda.models.{ LambdaError, S3DownloadError }
 
 object S3 extends Logging {
   // For DEV only

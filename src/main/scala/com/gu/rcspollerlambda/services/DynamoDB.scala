@@ -1,7 +1,7 @@
 package com.gu.rcspollerlambda.services
 
 import com.gu.rcspollerlambda.config.Config._
-import com.gu.rcspollerlambda.models.{DynamoReadError, LambdaError}
+import com.gu.rcspollerlambda.models.{ DynamoReadError, LambdaError }
 import com.gu.scanamo.Scanamo
 
 object DynamoDB extends Logging {

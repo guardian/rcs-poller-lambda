@@ -1,8 +1,8 @@
 package com.gu.rcspollerlambda.services
 
-import com.gu.rcspollerlambda.models.{ConversionError, LambdaError, RightsBatch, XMLLoadingError}
+import com.gu.rcspollerlambda.models.{ ConversionError, LambdaError, RightsBatch, XMLLoadingError }
 
-import scala.xml.{Elem, XML}
+import scala.xml.{ Elem, XML }
 
 object XMLOps extends Logging {
 

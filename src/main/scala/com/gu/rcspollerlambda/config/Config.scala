@@ -5,12 +5,12 @@ import java.util.Properties
 import com.amazonaws.auth._
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
-import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.cloudwatch.{AmazonCloudWatch, AmazonCloudWatchAsync, AmazonCloudWatchAsyncClientBuilder}
-import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder}
-import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClient}
-import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
-import com.amazonaws.services.securitytoken.{AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder}
+import com.amazonaws.regions.{ Region, Regions }
+import com.amazonaws.services.cloudwatch.{ AmazonCloudWatch, AmazonCloudWatchAsync, AmazonCloudWatchAsyncClientBuilder }
+import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder }
+import com.amazonaws.services.kinesis.{ AmazonKinesis, AmazonKinesisClient }
+import com.amazonaws.services.s3.{ AmazonS3, AmazonS3ClientBuilder }
+import com.amazonaws.services.securitytoken.{ AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder }
 import com.gu.rcspollerlambda.models.LambdaError
 import com.gu.rcspollerlambda.services.S3
 

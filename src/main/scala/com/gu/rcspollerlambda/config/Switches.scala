@@ -2,7 +2,7 @@ package com.gu.rcspollerlambda.config
 
 import com.gu.rcspollerlambda.config.Config._
 import com.gu.rcspollerlambda.models.LambdaError
-import com.gu.rcspollerlambda.services.{Logging, S3}
+import com.gu.rcspollerlambda.services.{ Logging, S3 }
 
 object Switches extends Logging {
   def rcsEnabled(action: => Either[LambdaError, String]): Either[LambdaError, String] =

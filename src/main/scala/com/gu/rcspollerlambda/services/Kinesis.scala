@@ -7,7 +7,7 @@ import cats.implicits._
 import com.amazonaws.services.kinesis.model.PutRecordRequest
 import com.gu.rcspollerlambda.config.Config._
 import com.gu.rcspollerlambda.config.Switches
-import com.gu.rcspollerlambda.models.{KinesisPublishError, LambdaError}
+import com.gu.rcspollerlambda.models.{ KinesisPublishError, LambdaError }
 import io.circe.Json
 
 object Kinesis extends Logging {
