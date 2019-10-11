@@ -30,7 +30,7 @@ object HTTP extends Logging {
           case 200 => Right(result.body)
           case _ => Left(RCSError(result.status + ": " + result.body))
         }
-      }, 2.minutes)
+      }, 5.minutes)
     } catch {
       case e: Throwable =>
         val fullStackTraceWriter = new StringWriter()
