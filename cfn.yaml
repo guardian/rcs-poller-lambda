@@ -189,7 +189,7 @@ Resources:
       Statistic: Sum
       ComparisonOperator: GreaterThanThreshold
       Threshold: 0
-      Period: '300'
+      Period: '600'
       EvaluationPeriods: 12
       AlarmActions:
       - !Ref AlarmTopic
