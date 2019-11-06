@@ -9,4 +9,4 @@ Get `composer` credentials and run: `sbt run`
 
 ### Deploy
 
-Deploy this project using riffraff. You can push your branch to the repository, test the changes out in CODE, then deploy to PROD upon merging your pull request to master.
+Deploy this project to CODE or PROD using Riffraff. Continuous deployment is in place in the master branch, [previous deploys can be found here](https://riffraff.gutools.co.uk/deployment/history?projectName=rcs-poller-lambda&page=1).
