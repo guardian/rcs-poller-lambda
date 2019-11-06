@@ -6,3 +6,7 @@ A lambda that polls RCS for rights updates, parses the returned xml and sends it
 
 ### Run locally
 Get `composer` credentials and run: `sbt run`
+
+### Deploy
+
+Deploy this project to CODE or PROD using Riffraff. Continuous deployment is in place in the master branch, [previous deploys can be found here](https://riffraff.gutools.co.uk/deployment/history?projectName=rcs-poller-lambda&page=1).
