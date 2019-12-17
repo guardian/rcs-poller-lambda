@@ -193,3 +193,5 @@ Resources:
       EvaluationPeriods: 12
       AlarmActions:
       - !Ref AlarmTopic
+      OKActions:
+      - !Ref AlarmTopic
