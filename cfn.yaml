@@ -1,7 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: A lambda to poll RCS
 Conditions:
-  isProd: !Equals [!Ref 'Stage', PROD]
+  isProd: !Equals
+    - !Ref 'Stage'
+    - PROD
 Parameters:
   VpcId:
     Description: The VPC in which Flexible Content lives
@@ -41,9 +43,9 @@ Parameters:
 Mappings:
   Lambda:
     CODE:
-      Rate: rate(10 minutes)
+      Rate: rate(15 minutes)
     PROD:
-      Rate: rate(10 minutes)
+      Rate: rate(15 minutes)
 
 Resources:
   LambdaSecurityGroup:
@@ -189,11 +191,12 @@ Resources:
       AlarmDescription: Alarm if there are any failures
       Namespace: rcs-poller-alarms
       MetricName: RCSPollerErrors
-      Statistic: Sum
+      Statistic: Minimum
       ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: breaching
       Threshold: 0
-      Period: '600'
-      EvaluationPeriods: 12
+      Period: '900'
+      EvaluationPeriods: 4
       AlarmActions:
       - !Ref AlarmTopic
       OKActions:
