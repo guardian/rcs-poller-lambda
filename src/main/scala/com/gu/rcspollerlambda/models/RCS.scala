@@ -57,6 +57,8 @@ object RightsBatch {
     RightsBatch(rightsUpdates, lastPosition)
   }
 
+  private val THRALL_MESSAGE_TYPE:String = "upsert-rcs-rights"
+
   def toJsonMessage(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[Json]] = {
     logger.info(s"Converting Seq[RCSUpdate] to Json...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
@@ -65,12 +67,17 @@ object RightsBatch {
       parse(stringWithNoNulls)
         .map(json =>
           Json.obj(
-            ("subject", Json.fromString("upsert-rcs-rights")),
+            ("subject", Json.fromString(THRALL_MESSAGE_TYPE)),
             ("id", Json.fromString(rcsUpdate.id)),
-            ("syndicationRights", json)))
+            ("syndicationRights", json),
+            ("lastModified", Json.fromString(nowISO8601))
+          )
+        )
         .leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
     }.toList.sequence
   }
+
+  private def nowISO8601 = DateTime.now(DateTimeZone.UTC).toString(ISODateTimeFormat.dateTime())
 
   private def extractOptString(node: Node, fieldName: String): Option[String] = (node \ fieldName).text match {
     case "" => None
