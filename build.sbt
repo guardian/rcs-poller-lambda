@@ -32,7 +32,10 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
   "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
-  "org.slf4j" % "slf4j-log4j12" % "1.7.25"
+  "org.slf4j" % "slf4j-log4j12" % "1.7.25",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
+  "org.mockito" % "mockito-core" % "2.18.0" % Test
+
 )
 
 enablePlugins(RiffRaffArtifact)
