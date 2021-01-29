@@ -9,4 +9,4 @@ Get `composer` credentials and run: `sbt run`
 
 ### Deploy
 
-Deploy this project to CODE or PROD using Riffraff. Continuous deployment is in place in the master branch, [previous deploys can be found here](https://riffraff.gutools.co.uk/deployment/history?projectName=rcs-poller-lambda&page=1).
+Deploy this project to CODE or PROD using Riffraff. Continuous deployment is in place in the `main` branch, [previous deploys can be found here](https://riffraff.gutools.co.uk/deployment/history?projectName=rcs-poller-lambda&page=1).
