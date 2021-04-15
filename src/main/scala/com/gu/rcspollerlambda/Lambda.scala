@@ -1,10 +1,20 @@
 package com.gu.rcspollerlambda
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
 import com.gu.rcspollerlambda.services._
+import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 object Lambda extends Logging {
+
+  implicit private val system: ActorSystem = ActorSystem()
+  system.registerOnTermination {
+    System.exit(0)
+  }
+  implicit private val materializer: ActorMaterializer = ActorMaterializer()
+
   /*
    * This is the lambda entry point
    */
@@ -13,14 +23,21 @@ object Lambda extends Logging {
   }
 
   def process(): Unit = {
-    val newLastId: Either[LambdaError, Option[Long]] = for {
-      lastId <- DynamoDB.getLastId
-      body <- HTTP.getXml(lastId)
-      xml <- XMLOps.stringToXml(body)
-      rb <- XMLOps.xmlToRightsBatch(xml)
-      json <- RightsBatch.toJsonMessage(rb.rightsUpdates)
-      _ <- Kinesis.publishRCSUpdates(json)
-    } yield rb.lastPosition
+    val wsClient = StandaloneAhcWSClient()
+    val newLastId: Either[LambdaError, Option[Long]] = try {
+      for {
+        lastId <- DynamoDB.getLastId
+        body <- HTTP.getXml(wsClient, lastId)
+        xml <- XMLOps.stringToXml(body)
+        rb <- XMLOps.xmlToRightsBatch(xml)
+        jsonList <- RightsBatch.toIdParamsWithJsonBodies(rb.rightsUpdates)
+        json = jsonList.map { case (_, json) => json }
+        _ <- Kinesis.publishRCSUpdates(json)
+        _ <- MetadataService.pushRCSUpdates(wsClient, jsonList)
+      } yield rb.lastPosition
+    } finally {
+      wsClient.close()
+    }
 
     newLastId.fold(
       err => {

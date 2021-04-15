@@ -18,4 +18,12 @@ object Switches extends Logging {
       logger.info(s"Sending rights on the Kinesis stream is not enabled...")
       Right(())
     }
+
+  def metadataServiceEnabled(action: => Either[LambdaError, Unit]): Either[LambdaError, Unit] =
+    if (isMetadataServiceEnabled) action
+    else {
+      logger.info(s"Sending rights to the Metadata service is not enabled...")
+      Right(())
+    }
+
 }

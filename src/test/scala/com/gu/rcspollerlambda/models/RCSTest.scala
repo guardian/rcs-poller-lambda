@@ -13,9 +13,9 @@ class RCSTest extends FunSpec with Matchers {
   describe("serialisation") {
     it("should correctly serialise a json message") {
       val r = List(RCSUpdate(0l, "id", SyndicationRights(None, Nil, Nil)))
-      val rJson = RightsBatch.toJsonMessage(r)
+      val rJson = RightsBatch.toIdParamsWithJsonBodies(r)
       rJson.isRight should be(true)
-      val rJsonContentList = rJson.right.get
+      val rJsonContentList = rJson.right.get.map { case (_, json) => json }
       rJsonContentList.length should be(1)
       val rJsonContent = rJsonContentList.head
       cleanJsonAndRemoveDates(rJsonContent.toString()) should be(cleanJsonAndRemoveDates(
