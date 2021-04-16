@@ -12,18 +12,18 @@ object Switches extends Logging {
       S3.getXmlFile
     }
 
-  def kinesisEnabled(action: => Either[LambdaError, Unit]): Either[LambdaError, Unit] =
+  def kinesisEnabled(action: => Either[LambdaError, String]): Either[LambdaError, String] =
     if (isKinesisEnabled) action
     else {
       logger.info(s"Sending rights on the Kinesis stream is not enabled...")
-      Right(())
+      Right("Sending rights to Kinesis is not enabled")
     }
 
-  def metadataServiceEnabled(action: => Either[LambdaError, Unit]): Either[LambdaError, Unit] =
+  def metadataServiceEnabled(action: => Either[LambdaError, String]): Either[LambdaError, String] =
     if (isMetadataServiceEnabled) action
     else {
       logger.info(s"Sending rights to the Metadata service is not enabled...")
-      Right(())
+      Right("Sending rights to the Metadata service is not enabled")
     }
 
 }

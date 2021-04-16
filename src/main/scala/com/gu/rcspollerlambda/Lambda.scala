@@ -32,9 +32,13 @@ object Lambda extends Logging {
         rb <- XMLOps.xmlToRightsBatch(xml)
         jsonRightsList <- RightsBatch.toIdParamsWithJsonBodies(rb.rightsUpdates)
         jsonMessageList <- RightsBatch.toJsonMessage(rb.rightsUpdates)
-        _ <- Kinesis.publishRCSUpdates(jsonMessageList)
-        _ <- MetadataService.pushRightsUpdates(wsClient, jsonRightsList)
-      } yield rb.lastPosition
+        kinesisMessage <- Kinesis.publishRCSUpdates(lastId.toString, jsonMessageList)
+        metadataMessage <- MetadataService.pushRightsUpdates(wsClient, jsonRightsList)
+      } yield {
+        logger.info(kinesisMessage)
+        logger.info(metadataMessage)
+        rb.lastPosition
+      }
     } finally {
       wsClient.close()
     }

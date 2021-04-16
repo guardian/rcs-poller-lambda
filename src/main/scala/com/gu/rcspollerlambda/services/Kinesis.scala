@@ -13,9 +13,12 @@ import com.gu.rcspollerlambda.models.{ KinesisPublishError, LambdaError }
 import io.circe.Json
 
 object Kinesis extends Logging {
-  def publishRCSUpdates(rcsUpdates: List[Json]): Either[LambdaError, Unit] = Switches.kinesisEnabled {
+  def publishRCSUpdates(lastId: String, rcsUpdates: List[Json]): Either[LambdaError, String] = Switches.kinesisEnabled {
     logger.info(s"Sending ${rcsUpdates.length} json RCS update(s) to the Kinesis stream...")
-    rcsUpdates.map(publish).sequence_
+    rcsUpdates.map(publish).collect { case Left(f) => f.message } match {
+      case Nil => Right("All messages published to Kinesis")
+      case errors => Left(KinesisPublishError(lastId, errors.mkString("\n")))
+    }
   }
 
   private val compressionMarkerByte: Byte = 0x00.toByte
@@ -30,14 +33,15 @@ object Kinesis extends Logging {
     compressionMarkerByte +: compressedBytes
   }
 
-  private def publish(message: Json): Either[LambdaError, Unit] = {
+  private def publish(message: Json): Either[LambdaError, String] = {
     try {
       val putRecordRequest = new PutRecordRequest()
         .withStreamName(AWS.kinesisStreamName)
         .withData(ByteBuffer.wrap(compress(message.noSpaces.getBytes)))
         .withPartitionKey(UUID.randomUUID().toString)
 
-      Right(AWS.kinesisClient.putRecord(putRecordRequest))
+      AWS.kinesisClient.putRecord(putRecordRequest)
+      Right("Message published to Kinesis")
     } catch {
       case e: Throwable => Left(KinesisPublishError(message.hcursor.downField("id").as[String].right.get, e.getMessage))
     }
