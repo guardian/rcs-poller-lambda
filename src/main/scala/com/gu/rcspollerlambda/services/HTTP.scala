@@ -31,13 +31,13 @@ object HTTP extends Logging {
   }
 
   def putJson(wsClient: StandaloneAhcWSClient, url: String, body: String, headers: (String, String)*): Either[LambdaError, String] = {
-    logger.info(s"Putting Json to '$url' with body '$body'")
+    logger.debug(s"Putting Json to '$url' with body '$body'")
     try {
       Await.result(
         wsClient.url(url)
           .withHttpHeaders(headers: _*)
           .put(body).map { result =>
-            logger.info(s"Status of PUT request was ${result.status}")
+            logger.debug(s"Status of PUT request was ${result.status}")
             result.status match {
               case 200 => Right(result.body)
               case _ => Left(MetadataServicePublishError(s"HTTP error ${result.status.toString}", result.body))
