@@ -15,7 +15,7 @@ object MetadataService extends Logging {
           .map { case (id, json) => post(wsClient, id, json) }
           .collect { case Left(f) => f.message }
           match {
-            case Nil => Right("All writes successfully written to Syndication service")
+            case Nil => Right(s"${rcsUpdates.length} writes successfully written to Syndication service")
             case errors => Left(MetadataServicePublishError("Error(s) writing to Syndication service", errors.mkString("\n")))
         }
       } catch {

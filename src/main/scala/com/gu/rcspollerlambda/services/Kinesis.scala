@@ -16,7 +16,7 @@ object Kinesis extends Logging {
   def publishRCSUpdates(lastId: String, rcsUpdates: List[Json]): Either[LambdaError, String] = Switches.kinesisEnabled {
     logger.info(s"Sending ${rcsUpdates.length} json RCS update(s) to the Kinesis stream...")
     rcsUpdates.map(publish).collect { case Left(f) => f.message } match {
-      case Nil => Right("All messages published to Kinesis")
+      case Nil => Right(s"${rcsUpdates.length} messages published to Kinesis")
       case errors => Left(KinesisPublishError(lastId, errors.mkString("\n")))
     }
   }
