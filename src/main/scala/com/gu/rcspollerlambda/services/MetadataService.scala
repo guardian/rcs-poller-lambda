@@ -18,10 +18,11 @@ object MetadataService extends Logging {
     }
   }
 
-  val headers = "X-Gu-Media-Key" -> metadataServiceApiKey
+  val securityHeader = "X-Gu-Media-Key" -> metadataServiceApiKey
+  val contentHeader = "Content-Type" -> "application/json"
   def post(wsClient: StandaloneAhcWSClient, id: String, body: Json): Unit = {
     val url = s"https://$metadataServiceDomain/metadata/$id/syndication"
-    HTTP.putJson(wsClient, url, body.toString(), headers)
+    HTTP.putJson(wsClient, url, body.toString(), securityHeader, contentHeader)
   }
 
 }
