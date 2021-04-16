@@ -60,7 +60,7 @@ object RightsBatch {
   private val THRALL_MESSAGE_TYPE: String = "upsert-rcs-rights"
 
   def toJsonMessage(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[Json]] = {
-    logger.info(s"Converting Seq[RCSUpdate] to Json...")
+    logger.info(s"Converting Seq[RCSUpdate] to Json for Kinesis messages...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
     rightsBatch.map { rcsUpdate =>
       val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
@@ -76,7 +76,7 @@ object RightsBatch {
   }
 
   def toIdParamsWithJsonBodies(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[(String, Json)]] = {
-    logger.info(s"Converting Seq[RCSUpdate] to Json...")
+    logger.info(s"Converting Seq[RCSUpdate] to (id, Json) pairs for Metadata service requests...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
     rightsBatch.map { rcsUpdate =>
       val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
