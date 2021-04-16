@@ -27,13 +27,13 @@ object Lambda extends Logging {
     val newLastId: Either[LambdaError, Option[Long]] = try {
       for {
         lastId <- DynamoDB.getLastId
-        body <- HTTP.getXml(wsClient, lastId)
+        body <- RCSService.getXml(wsClient, lastId)
         xml <- XMLOps.stringToXml(body)
         rb <- XMLOps.xmlToRightsBatch(xml)
         jsonRightsList <- RightsBatch.toIdParamsWithJsonBodies(rb.rightsUpdates)
         jsonMessageList <- RightsBatch.toJsonMessage(rb.rightsUpdates)
         _ <- Kinesis.publishRCSUpdates(jsonMessageList)
-        _ <- MetadataService.pushRCSUpdates(wsClient, jsonRightsList)
+        _ <- MetadataService.pushRightsUpdates(wsClient, jsonRightsList)
       } yield rb.lastPosition
     } finally {
       wsClient.close()

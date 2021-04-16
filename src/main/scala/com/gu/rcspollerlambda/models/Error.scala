@@ -28,6 +28,6 @@ case class KinesisPublishError(id: String, err: String) extends LambdaError {
   override val message: String = s"Error while sending message to Kinesis for image id $id: $err"
 }
 
-case class MetadataServicePublishError(id: String, err: String) extends LambdaError {
-  override val message: String = s"Error while sending message to Metadata Service for image id $id: $err"
+case class MetadataServicePublishError(errorDescription: String, err: String) extends LambdaError {
+  override val message: String = s"Error ($errorDescription) while sending message to Metadata Service: $err"
 }

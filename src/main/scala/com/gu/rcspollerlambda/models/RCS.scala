@@ -70,9 +70,7 @@ object RightsBatch {
             ("subject", Json.fromString(THRALL_MESSAGE_TYPE)),
             ("id", Json.fromString(rcsUpdate.id)),
             ("syndicationRights", json),
-            ("lastModified", Json.fromString(nowISO8601))
-          )
-        )
+            ("lastModified", Json.fromString(nowISO8601))))
         .leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
     }.toList.sequence
   }

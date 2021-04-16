@@ -7,7 +7,7 @@ import com.gu.rcspollerlambda.config.Config.{ metadataServiceApiKey, metadataSer
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 object MetadataService extends Logging {
-  def pushRCSUpdates(wsClient: StandaloneAhcWSClient, rcsUpdates: List[(String, Json)]): Either[LambdaError, Unit] = {
+  def pushRightsUpdates(wsClient: StandaloneAhcWSClient, rcsUpdates: List[(String, Json)]): Either[LambdaError, Unit] = {
     logger.info(s"Sending ${rcsUpdates.length} json RCS update(s) to the Metadata service...")
     Switches.metadataServiceEnabled {
       try {
