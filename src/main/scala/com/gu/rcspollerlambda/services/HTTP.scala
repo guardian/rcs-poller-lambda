@@ -36,7 +36,7 @@ object HTTP extends Logging {
   }
 
   def putJson(wsClient: StandaloneAhcWSClient, url: String, body: String, headers: (String, String)*): Either[LambdaError, String] = {
-    logger.info(s"Putting Json to $url")
+    logger.info(s"Putting Json to '$url' with body '$body'")
     try {
       Await.result(
         wsClient.url(rcsUrl)
