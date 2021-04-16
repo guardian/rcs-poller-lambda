@@ -39,7 +39,7 @@ object HTTP extends Logging {
     logger.info(s"Putting Json to '$url' with body '$body'")
     try {
       Await.result(
-        wsClient.url(rcsUrl)
+        wsClient.url(url)
           .withHttpHeaders(headers: _*)
           .put(body).map { result =>
             logger.info(s"Status of PUT request was ${result.status}")
