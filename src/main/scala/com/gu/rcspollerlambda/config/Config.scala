@@ -57,9 +57,14 @@ object Config {
   lazy val rcsUrl: String = getConfig("rcs.url")
   lazy val subscriberName: String = getConfig("rcs.subscriber.name")
 
+  //MetadataService endpoint
+  lazy val metadataServiceDomain: String = getConfig("metadataservice.domain")
+  lazy val metadataServiceApiKey: String = getConfig("metadataservice.key")
+
   //Switches
   lazy val isRcsEnabled: Boolean = getConfig("rcs.enabled").toBoolean
   lazy val isKinesisEnabled: Boolean = getConfig("kinesis.enabled").toBoolean
+  lazy val isMetadataServiceEnabled: Boolean = getConfig("metadataservice.enabled").toBoolean
 
   private lazy val config: Either[LambdaError, Properties] = S3.loadConfig()
   private def getConfig(property: String): String = config

@@ -57,10 +57,10 @@ object RightsBatch {
     RightsBatch(rightsUpdates, lastPosition)
   }
 
-  private val THRALL_MESSAGE_TYPE:String = "upsert-rcs-rights"
+  private val THRALL_MESSAGE_TYPE: String = "upsert-rcs-rights"
 
   def toJsonMessage(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[Json]] = {
-    logger.info(s"Converting Seq[RCSUpdate] to Json...")
+    logger.info(s"Converting Seq[RCSUpdate] to Json for Kinesis messages...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
     rightsBatch.map { rcsUpdate =>
       val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
@@ -70,9 +70,20 @@ object RightsBatch {
             ("subject", Json.fromString(THRALL_MESSAGE_TYPE)),
             ("id", Json.fromString(rcsUpdate.id)),
             ("syndicationRights", json),
-            ("lastModified", Json.fromString(nowISO8601))
-          )
-        )
+            ("lastModified", Json.fromString(nowISO8601))))
+        .leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
+    }.toList.sequence
+  }
+
+  def toIdParamsWithJsonBodies(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[(String, Json)]] = {
+    logger.info(s"Converting Seq[RCSUpdate] to (id, Json) pairs for Metadata service requests...")
+    val printer = Printer.noSpaces.copy(dropNullValues = true)
+    rightsBatch.map { rcsUpdate =>
+      val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
+      parse(stringWithNoNulls)
+        .map(json => {
+          rcsUpdate.id -> Json.obj("data" -> json)
+        })
         .leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
     }.toList.sequence
   }
