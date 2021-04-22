@@ -12,10 +12,14 @@ import play.api.libs.ws.DefaultBodyWritables._
 
 object HTTP extends Logging {
 
-  def getXml(wsClient: StandaloneAhcWSClient, url: String, lastid: Long, subscriberName: String): Either[LambdaError, String] = {
+  def getXml(wsClient: StandaloneAhcWSClient, url: String, lastid: Long, subscriberName: String, batchMaybe: Option[Long] = None): Either[LambdaError, String] = {
     logger.info(s"Fetching XML from $url?lastid=$lastid&subscribername=$subscriberName")
+    val parameters = Seq(
+      ("lastid", lastid.toString),
+      ("subscribername", subscriberName)) ++ batchMaybe.map(batch => ("batchsize", batch.toString))
+
     try {
-      Await.result(wsClient.url(url).withQueryStringParameters(("lastid", lastid.toString), ("subscribername", subscriberName)).get().map { result =>
+      Await.result(wsClient.url(url).withQueryStringParameters(parameters: _*).get().map { result =>
         logger.info(s"Status of GET request was ${result.status}")
         result.status match {
           case 200 => Right(result.body)

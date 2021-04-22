@@ -1,7 +1,10 @@
 package com.gu.rcspollerlambda.models
 
+import java.io.PrintWriter
+
 import cats.implicits._
 import cats.syntax.either._
+import com.gu.rcspollerlambda.BackfillApp.{ batchSize, lastId }
 import com.gu.rcspollerlambda.services.XMLOps.logger
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.parser.parse
@@ -20,41 +23,51 @@ object RightsBatch {
     val tagsSets = rcsRightsFeed \ "tagSet"
     logger.info(s"Fetched ${tagsSets.length} tag sets")
 
-    val rightsUpdates = for (ts <- tagsSets) yield {
-      val tagSetId = (ts \ "@tagSetId").headOption.map(_.text).map(_.toLong)
+    val rightsUpdates: Seq[Option[RCSUpdate]] = for (ts <- tagsSets) yield {
+      try {
 
-      val rights = for (r <- ts \ "rights" \ "right") yield {
-        val rightCode = (r \ "rightCode").text
-        val acquired = extractOptBoolean(r, "acquired")
-        val properties = for (p <- r \ "properties" \ "property") yield {
-          val propertyCode = (p \ "propertyCode").text
-          val expiresOn = (p \ "expiresOn").headOption.map { dtNode =>
-            new DateTime(dtNode.text)
+        val tagSetId = (ts \ "@tagSetId").headOption.map(_.text).map(_.toLong)
+
+        val rights = for (r <- ts \ "rights" \ "right") yield {
+          val rightCode = (r \ "rightCode").text
+          val acquired = extractOptBoolean(r, "acquired")
+          val properties = for (p <- r \ "properties" \ "property") yield {
+            val propertyCode = (p \ "propertyCode").text
+            val expiresOn = (p \ "expiresOn").headOption.map { dtNode =>
+              new DateTime(dtNode.text, DateTimeZone.UTC)
+            }
+            val pValue = extractOptString(p, "value")
+            Property(propertyCode, expiresOn, pValue)
           }
-          val pValue = extractOptString(p, "value")
-          Property(propertyCode, expiresOn, pValue)
+          Right(rightCode, acquired, properties)
         }
-        Right(rightCode, acquired, properties)
-      }
 
-      val id = (ts \ "mediaId").text
-      val published = (ts \ "published").headOption.map { dtNode =>
-        new DateTime(dtNode.text)
-      }
+        val id = (ts \ "mediaId").text
+        val published = (ts \ "published").headOption.map { dtNode =>
+          new DateTime(dtNode.text, DateTimeZone.UTC)
+        }
 
-      val suppliers: Seq[Supplier] = for (s <- ts \ "suppliers" \ "supplier") yield {
-        val supplierId = extractOptString(s, "supplierId")
-        val supplierName = extractOptString(s, "supplierName")
-        val prAgreement = extractOptBoolean(s, "prAgreement")
-        Supplier(supplierName, supplierId, prAgreement)
-      }
+        val suppliers: Seq[Supplier] = for (s <- ts \ "suppliers" \ "supplier") yield {
+          val supplierId = extractOptString(s, "supplierId")
+          val supplierName = extractOptString(s, "supplierName")
+          val prAgreement = extractOptBoolean(s, "prAgreement")
+          Supplier(supplierName, supplierId, prAgreement)
+        }
 
-      RCSUpdate(tagSetId.get, id, SyndicationRights(published, suppliers, rights))
+        Some(RCSUpdate(tagSetId.get, id, SyndicationRights(published, suppliers, rights)))
+      } catch {
+        case _: Exception => synchronized {
+          new PrintWriter(s"badrights.$lastId.$batchSize") { write(ts.toString); close }
+          None
+        }
+      }
     }
 
-    val lastPosition = rightsUpdates.lastOption.map(_.tagSetId)
+    val ru = rightsUpdates.collect { case Some(r) => r }
 
-    RightsBatch(rightsUpdates, lastPosition)
+    val lastPosition = ru.lastOption.map(_.tagSetId)
+
+    RightsBatch(ru, lastPosition)
   }
 
   private val THRALL_MESSAGE_TYPE: String = "upsert-rcs-rights"
