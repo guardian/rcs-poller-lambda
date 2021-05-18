@@ -2,18 +2,18 @@ package com.gu.rcspollerlambda.models
 
 import cats.implicits._
 import cats.syntax.either._
-import com.gu.rcspollerlambda.services.XMLOps.logger
+import com.gu.rcspollerlambda.services.Logging
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.parser.parse
 import io.circe.syntax._
-import io.circe.{ Encoder, Json, Printer }
+import io.circe.{Encoder, Json, Printer}
 import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.{ DateTime, DateTimeZone }
+import org.joda.time.{DateTime, DateTimeZone}
 
-import scala.xml.{ Elem, Node }
+import scala.xml.{Elem, Node}
 
 case class RightsBatch(rightsUpdates: Seq[RCSUpdate], lastPosition: Option[Long])
-object RightsBatch {
+object RightsBatch extends Logging {
   implicit val encoder: Encoder[RightsBatch] = deriveEncoder[RightsBatch]
 
   def apply(rcsRightsFeed: Elem): RightsBatch = {
@@ -58,22 +58,6 @@ object RightsBatch {
   }
 
   private val THRALL_MESSAGE_TYPE: String = "upsert-rcs-rights"
-
-  def toJsonMessage(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[Json]] = {
-    logger.info(s"Converting Seq[RCSUpdate] to Json for Kinesis messages...")
-    val printer = Printer.noSpaces.copy(dropNullValues = true)
-    rightsBatch.map { rcsUpdate =>
-      val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
-      parse(stringWithNoNulls)
-        .map(json =>
-          Json.obj(
-            ("subject", Json.fromString(THRALL_MESSAGE_TYPE)),
-            ("id", Json.fromString(rcsUpdate.id)),
-            ("syndicationRights", json),
-            ("lastModified", Json.fromString(nowISO8601))))
-        .leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
-    }.toList.sequence
-  }
 
   def toIdParamsWithJsonBodies(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[(String, Json)]] = {
     logger.info(s"Converting Seq[RCSUpdate] to (id, Json) pairs for Metadata service requests...")
