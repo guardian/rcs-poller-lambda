@@ -12,6 +12,11 @@ object MetadataService extends Logging {
     Switches.metadataServiceEnabled {
       try {
         rcsUpdates
+          .filter { case (id, _) =>
+            val validId = isGridId(id)
+            if (!validId) logger.warn(s"Dropping rights update as $id is not a legitimate grid ID")
+            validId
+          }
           .map { case (id, json) => post(wsClient, id, json) }
           .collect { case Left(f) => f.message }
           match {
@@ -22,6 +27,13 @@ object MetadataService extends Logging {
         case t: Throwable => Left(MetadataServicePublishError("Unable to publish to metadata service", t.toString))
       }
     }
+  }
+
+  // A grid ID should be 40 characters long and valid hex characters
+  def isGridId(potentialId: String): Boolean = {
+    // include upper and lowercase to be safe
+    val validChars = "0123456789abcdefABCDEF".toSet
+    potentialId.length == 40 && potentialId.forall(validChars.contains)
   }
 
   val securityHeader = "X-Gu-Media-Key" -> metadataServiceApiKey
