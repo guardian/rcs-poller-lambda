@@ -25,14 +25,13 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
   "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
-  "com.amazonaws" % "aws-lambda-java-log4j" % "1.0.0",
   "com.gu" %% "scanamo" % "1.0.0-M6",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
   "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
-  "org.slf4j" % "slf4j-log4j12" % "1.7.25",
+  "org.slf4j" % "slf4j-simple" % "1.7.32",
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
   "org.mockito" % "mockito-core" % "2.18.0" % Test
 
