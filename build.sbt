@@ -22,9 +22,7 @@ val circeVersion = "0.14.3"
 
 libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
-  "com.amazonaws" % "amazon-kinesis-client" % "1.10.0",
   "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
-  "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
   "org.scanamo" %% "scanamo" % "1.0.0-M12-1",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.1.10",
@@ -33,7 +31,6 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % circeVersion,
   "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
   "org.slf4j" % "slf4j-simple" % "1.7.32"
-
 )
 
 enablePlugins(RiffRaffArtifact)

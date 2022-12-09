@@ -6,9 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.regions.{Region, Regions}
 import com.amazonaws.services.cloudwatch.{AmazonCloudWatch, AmazonCloudWatchAsync, AmazonCloudWatchAsyncClientBuilder}
 import com.amazonaws.services.dynamodbv2.{AmazonDynamoDB, AmazonDynamoDBClientBuilder}
-import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClient}
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
-import com.amazonaws.services.securitytoken.{AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder}
 import com.gu.rcspollerlambda.models.LambdaError
 import com.gu.rcspollerlambda.services.S3
 
@@ -18,8 +16,6 @@ object Config {
   object AWS {
     val awsRegion = Regions.EU_WEST_1
 
-    lazy val roleArn: String = getConfig("role.arn")
-    lazy val kinesisStreamName: String = getConfig("kinesis.stream")
     lazy val dynamoTableName: String = s"rcs-poller-lambda-$stage"
 
     lazy val awsComposerCredentials = new AWSCredentialsProviderChain(
@@ -39,16 +35,6 @@ object Config {
       .withCredentials(awsComposerCredentials)
       .withEndpointConfiguration(new EndpointConfiguration(Region.getRegion(awsRegion).getServiceEndpoint(AmazonCloudWatch.ENDPOINT_PREFIX), awsRegion.getName))
       .build()
-    lazy val kinesisClient: AmazonKinesis = AmazonKinesisClient.builder()
-      .withRegion(awsRegion)
-      .withCredentials(getMediaServiceCredentials)
-      .build()
-
-    // We need to assume sts role in order to get creds to send messages on the kinesis stream in the media-service account
-    private def getMediaServiceCredentials: STSAssumeRoleSessionCredentialsProvider = {
-      lazy val stsClient: AWSSecurityTokenService = AWSSecurityTokenServiceClientBuilder.standard().withRegion(awsRegion).build()
-      new STSAssumeRoleSessionCredentialsProvider.Builder(roleArn, "RCS-poller-lambda").withStsClient(stsClient).build()
-    }
   }
 
   lazy val stage: String = Option(System.getenv("Stage")).getOrElse("DEV")
@@ -63,7 +49,6 @@ object Config {
 
   //Switches
   lazy val isRcsEnabled: Boolean = getConfig("rcs.enabled").toBoolean
-  lazy val isKinesisEnabled: Boolean = getConfig("kinesis.enabled").toBoolean
   lazy val isMetadataServiceEnabled: Boolean = getConfig("metadataservice.enabled").toBoolean
 
   private lazy val config: Either[LambdaError, Properties] = S3.loadConfig()
