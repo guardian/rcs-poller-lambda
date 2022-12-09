@@ -63,7 +63,7 @@ object RightsBatch extends Logging {
     logger.info(s"Converting Seq[RCSUpdate] to (id, Json) pairs for Metadata service requests...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
     rightsBatch.map { rcsUpdate =>
-      val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
+      val stringWithNoNulls = printer.print(rcsUpdate.data.asJson)
       parse(stringWithNoNulls)
         .map(json => {
           rcsUpdate.id -> Json.obj("data" -> json)

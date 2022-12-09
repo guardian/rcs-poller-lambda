@@ -10,6 +10,7 @@ scalaVersion := "2.12.17"
 
 scalacOptions ++= Seq(
   "-deprecation",
+  "-feature",
   "-encoding", "UTF-8",
   "-target:jvm-1.8",
   "-Ywarn-dead-code",
@@ -17,7 +18,7 @@ scalacOptions ++= Seq(
 )
 
 val awsVersion = "1.11.344"
-val circeVersion = "0.9.3"
+val circeVersion = "0.14.3"
 
 libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
@@ -25,13 +26,13 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-s3" % awsVersion,
   "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
-  "com.gu" %% "scanamo" % "1.0.0-M6",
+  "org.scanamo" %% "scanamo" % "1.0.0-M12-1",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.1.10",
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
-  "org.slf4j" % "slf4j-simple" % "1.7.32",
+  "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+  "org.slf4j" % "slf4j-simple" % "1.7.32"
 
 )
 
