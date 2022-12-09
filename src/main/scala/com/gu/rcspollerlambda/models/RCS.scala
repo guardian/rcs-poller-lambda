@@ -1,7 +1,6 @@
 package com.gu.rcspollerlambda.models
 
 import cats.implicits._
-import cats.syntax.either._
 import com.gu.rcspollerlambda.services.Logging
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.parser.parse
@@ -57,8 +56,6 @@ object RightsBatch extends Logging {
     RightsBatch(rightsUpdates, lastPosition)
   }
 
-  private val THRALL_MESSAGE_TYPE: String = "upsert-rcs-rights"
-
   def toIdParamsWithJsonBodies(rightsBatch: Seq[RCSUpdate]): Either[LambdaError, List[(String, Json)]] = {
     logger.info(s"Converting Seq[RCSUpdate] to (id, Json) pairs for Metadata service requests...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
@@ -71,8 +68,6 @@ object RightsBatch extends Logging {
         .leftMap(parsingFailure => ConversionError(parsingFailure.getMessage()))
     }.toList.sequence
   }
-
-  private def nowISO8601 = DateTime.now(DateTimeZone.UTC).toString(ISODateTimeFormat.dateTime())
 
   private def extractOptString(node: Node, fieldName: String): Option[String] = (node \ fieldName).text match {
     case "" => None

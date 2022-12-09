@@ -14,7 +14,9 @@ scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-target:jvm-1.8",
   "-Ywarn-dead-code",
-  "-Ypartial-unification"
+  "-Ywarn-unused",
+  "-Ypartial-unification",
+  "-Xfatal-warnings"
 )
 
 val awsVersion = "1.11.344"
