@@ -26,7 +26,7 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-sts" % awsVersion,
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
   "com.gu" %% "scanamo" % "1.0.0-M6",
-  "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.2",
+  "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.1.10",
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,

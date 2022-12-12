@@ -1,7 +1,7 @@
 package com.gu.rcspollerlambda
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import com.amazonaws.services.lambda.runtime.Context
 import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
 import com.gu.rcspollerlambda.services._
@@ -13,7 +13,6 @@ object Lambda extends Logging {
   system.registerOnTermination {
     System.exit(0)
   }
-  implicit private val materializer: ActorMaterializer = ActorMaterializer()
 
   /*
    * This is the lambda entry point
