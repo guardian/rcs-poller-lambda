@@ -5,7 +5,6 @@ deployments:
   rcs-poller-lambda:
     type: aws-lambda
     parameters:
-      bucket: composer-dist
       functionNames: [rcs-poller-lambda-]
       fileName: rcs-poller-lambda.jar
       prefixStack: false
