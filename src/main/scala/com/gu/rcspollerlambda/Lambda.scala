@@ -1,11 +1,12 @@
 package com.gu.rcspollerlambda
 
 import akka.actor.ActorSystem
-import akka.stream.Materializer
 import com.amazonaws.services.lambda.runtime.Context
-import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
+import com.gu.rcspollerlambda.models.{LambdaError, RightsBatch}
 import com.gu.rcspollerlambda.services._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
+
+import scala.annotation.nowarn
 
 object Lambda extends Logging {
 
@@ -17,7 +18,7 @@ object Lambda extends Logging {
   /*
    * This is the lambda entry point
    */
-  def handler(context: Context): Unit = {
+  def handler(@nowarn context: Context): Unit = {
     process()
   }
 
