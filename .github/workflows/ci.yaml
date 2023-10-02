@@ -1,0 +1,37 @@
+name: CI
+on:
+  workflow_dispatch: # Manual invocation.
+  push:
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    permissions:
+      # required by aws-actions/configure-aws-credentials
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'corretto'
+          cache: 'sbt'
+      - name: SBT
+        run: sbt clean compile test assembly
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+          aws-region: eu-west-1
+      - uses: guardian/actions-riff-raff@v2
+        with:
+          projectName: rcs-poller-lambda
+          buildNumberOffset: 200
+          configPath: riff-raff.yaml
+          contentDirectories: |
+            rcs-poller-lambda-cfn:
+              - cfn.yaml
+            rcs-poller-lambda:
+              - target/scala-2.12/rcs-poller-lambda.jar
+
+
