@@ -182,6 +182,9 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
+      Tags:
+        - Key: devx-backup-enabled
+          Value: true
 
   Alarm:
     Condition: isProd
