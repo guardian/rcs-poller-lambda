@@ -41,9 +41,9 @@ assembly / assemblyMergeStrategy := {
   // we just need to keep one of them (either one) in the jar
   case "mime.types" => MergeStrategy.last
   case PathList(ps @ _*) if ps.last == "deriving.conf" => MergeStrategy.filterDistinctLines
+  case PathList(ps @ _*) if ps.last == "module-info.class" => MergeStrategy.discard
   case PathList("google", "protobuf", "struct.proto") => MergeStrategy.last
-  case "META-INF/io.netty.versions.properties" => MergeStrategy.discard
-  case x if x.endsWith("module-info.class") => MergeStrategy.discard
+  case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.discard
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
