@@ -1,7 +1,7 @@
 package com.gu.rcspollerlambda.services
 
 import com.gu.rcspollerlambda.config.Config._
-import com.gu.rcspollerlambda.models.{ DynamoReadError, LambdaError }
+import com.gu.rcspollerlambda.models.{ DynamoReadError, DynamoWriteError, LambdaError }
 import org.scanamo.{ Scanamo, Table }
 import org.scanamo.generic.auto._
 
@@ -25,6 +25,6 @@ object DynamoDB extends Logging {
     logger.info(s"Saving the new last id $id in the ${AWS.dynamoTableName} table...")
     Try {
       scanamo.exec(table.put(LastId(value = id)))
-    }.toEither.left.map(error => DynamoReadError(error.toString))
+    }.toEither.left.map(error => DynamoWriteError(error.toString))
   }
 }

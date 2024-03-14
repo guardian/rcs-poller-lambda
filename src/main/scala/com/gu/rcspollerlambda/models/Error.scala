@@ -4,6 +4,10 @@ sealed trait LambdaError {
   val message: String
 }
 
+case class DynamoWriteError(err: String) extends LambdaError {
+  override val message: String = s"Error while writing lastid to db: $err"
+}
+
 case class DynamoReadError(err: String) extends LambdaError {
   override val message: String = s"Error while fetching lastid from db: $err"
 }
