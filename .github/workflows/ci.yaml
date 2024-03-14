@@ -32,6 +32,6 @@ jobs:
             rcs-poller-lambda-cfn:
               - cfn.yaml
             rcs-poller-lambda:
-              - target/scala-2.12/rcs-poller-lambda.jar
+              - target/scala-2.13/rcs-poller-lambda.jar
 
 
