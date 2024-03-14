@@ -11,7 +11,7 @@ scalaVersion := "2.13.13"
 scalacOptions ++= Seq(
   "-deprecation",
   "-encoding", "UTF-8",
-  "-release:8",
+  "-release:11",
   "-Ywarn-dead-code"
 )
 
