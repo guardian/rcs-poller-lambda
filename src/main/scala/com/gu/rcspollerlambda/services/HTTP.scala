@@ -19,7 +19,7 @@ object HTTP extends Logging {
         logger.info(s"Status of GET request was ${result.status}")
         result.status match {
           case 200 => Right(result.body)
-          case _ => Left(RCSError(result.status + ": " + result.body))
+          case _ => Left(RCSError(s"${result.status}: ${result.body}"))
         }
       }, 5.minutes)
     } catch {

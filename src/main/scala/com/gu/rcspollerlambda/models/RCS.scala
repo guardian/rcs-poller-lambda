@@ -6,11 +6,11 @@ import com.gu.rcspollerlambda.services.Logging
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.parser.parse
 import io.circe.syntax._
-import io.circe.{Encoder, Json, Printer}
+import io.circe.{ Encoder, Json, Printer }
 import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.{ DateTime, DateTimeZone }
 
-import scala.xml.{Elem, Node}
+import scala.xml.{ Elem, Node }
 
 case class RightsBatch(rightsUpdates: Seq[RCSUpdate], lastPosition: Option[Long])
 object RightsBatch extends Logging {
@@ -63,7 +63,7 @@ object RightsBatch extends Logging {
     logger.info(s"Converting Seq[RCSUpdate] to (id, Json) pairs for Metadata service requests...")
     val printer = Printer.noSpaces.copy(dropNullValues = true)
     rightsBatch.map { rcsUpdate =>
-      val stringWithNoNulls = printer.pretty(rcsUpdate.data.asJson)
+      val stringWithNoNulls = printer.print(rcsUpdate.data.asJson)
       parse(stringWithNoNulls)
         .map(json => {
           rcsUpdate.id -> Json.obj("data" -> json)
@@ -87,7 +87,7 @@ object RightsBatch extends Logging {
 
 object DateTimeFormatter {
   private val formatter = ISODateTimeFormat.dateTime()
-  implicit val dateTimeEncoder = new Encoder[DateTime] {
+  implicit val dateTimeEncoder: Encoder[DateTime] = new Encoder[DateTime] {
     def apply(d: DateTime): Json = {
       val utc = d.withZone(DateTimeZone.UTC)
       formatter.print(utc).asJson

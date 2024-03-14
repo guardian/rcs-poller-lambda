@@ -1,16 +1,17 @@
 package com.gu.rcspollerlambda.config
 
 import java.util.Properties
-
 import com.amazonaws.auth._
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.regions.{ Region, Regions }
 import com.amazonaws.services.cloudwatch.{ AmazonCloudWatch, AmazonCloudWatchAsync, AmazonCloudWatchAsyncClientBuilder }
-import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder }
 import com.amazonaws.services.kinesis.{ AmazonKinesis, AmazonKinesisClient }
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3ClientBuilder }
 import com.amazonaws.services.securitytoken.{ AWSSecurityTokenService, AWSSecurityTokenServiceClientBuilder }
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.auth.credentials.{ AwsCredentialsProviderChain => AwsCredentialsProviderChainV2, DefaultCredentialsProvider => DefaultCredentialsProviderV2, ProfileCredentialsProvider => ProfileCredentialsProviderV2 }
+import software.amazon.awssdk.regions.{ Region => RegionV2 }
 import com.gu.rcspollerlambda.models.LambdaError
 import com.gu.rcspollerlambda.services.S3
 
@@ -27,10 +28,12 @@ object Config {
       new ProfileCredentialsProvider("composer"),
       new InstanceProfileCredentialsProvider(false))
 
-    lazy val dynamoClient: AmazonDynamoDBAsync = AmazonDynamoDBAsyncClientBuilder.standard
-      .withRegion(awsRegion)
-      .withCredentials(awsComposerCredentials)
-      .build()
+    private lazy val awsComposerCredentialsV2 = AwsCredentialsProviderChainV2.of(
+      ProfileCredentialsProviderV2.create("mobile"),
+      DefaultCredentialsProviderV2.create())
+
+    lazy val dynamoClient = DynamoDbClient.builder().credentialsProvider(awsComposerCredentialsV2).region(RegionV2.EU_WEST_1).build()
+
     lazy val s3Client: AmazonS3 = AmazonS3ClientBuilder.standard
       .withRegion(awsRegion)
       .withCredentials(awsComposerCredentials)
