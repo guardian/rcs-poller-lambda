@@ -29,7 +29,7 @@ object Config {
       new InstanceProfileCredentialsProvider(false))
 
     private lazy val awsComposerCredentialsV2 = AwsCredentialsProviderChainV2.of(
-      ProfileCredentialsProviderV2.create("mobile"),
+      ProfileCredentialsProviderV2.create("composer"),
       DefaultCredentialsProviderV2.create())
 
     lazy val dynamoClient = DynamoDbClient.builder().credentialsProvider(awsComposerCredentialsV2).region(RegionV2.EU_WEST_1).build()
