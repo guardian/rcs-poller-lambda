@@ -12,17 +12,17 @@ object MetadataService extends Logging {
     Switches.metadataServiceEnabled {
       try {
         rcsUpdates
-          .filter { case (id, _) =>
-            val validId = isGridId(id)
-            if (!validId) logger.warn(s"Dropping rights update as $id is not a legitimate grid ID")
-            validId
+          .filter {
+            case (id, _) =>
+              val validId = isGridId(id)
+              if (!validId) logger.warn(s"Dropping rights update as $id is not a legitimate grid ID")
+              validId
           }
           .map { case (id, json) => post(wsClient, id, json) }
-          .collect { case Left(f) => f.message }
-          match {
+          .collect { case Left(f) => f.message } match {
             case Nil => Right(s"${rcsUpdates.length} writes successfully written to Syndication service")
             case errors => Left(MetadataServicePublishError("Error(s) writing to Syndication service", errors.mkString("\n")))
-        }
+          }
       } catch {
         case t: Throwable => Left(MetadataServicePublishError("Unable to publish to metadata service", t.toString))
       }

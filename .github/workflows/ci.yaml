@@ -14,7 +14,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '11'
           distribution: 'corretto'
           cache: 'sbt'
       - name: SBT
@@ -32,6 +32,6 @@ jobs:
             rcs-poller-lambda-cfn:
               - cfn.yaml
             rcs-poller-lambda:
-              - target/scala-2.12/rcs-poller-lambda.jar
+              - target/scala-2.13/rcs-poller-lambda.jar
 
 
