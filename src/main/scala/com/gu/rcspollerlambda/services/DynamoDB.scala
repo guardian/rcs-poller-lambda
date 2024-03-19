@@ -16,9 +16,11 @@ object DynamoDB extends Logging {
 
   def getLastId: Either[LambdaError, Long] = {
     logger.info(s"Reading the last id from the ${AWS.dynamoTableName} table...")
-    scanamo.exec(table.limit(1).scan()).headOption
-      .getOrElse(Left(DynamoReadError("No id found in the table.")))
-      .fold(dynamoReadError => Left(DynamoReadError(dynamoReadError.toString)), lastId => Right(lastId.value))
+    Try {
+      scanamo.exec(table.limit(1).scan()).headOption
+        .getOrElse(Left(DynamoReadError("No id found in the table.")))
+        .fold(dynamoReadError => Left(DynamoReadError(dynamoReadError.toString)), lastId => Right(lastId.value))
+    }.fold({ error => Left(DynamoReadError(error.toString)) }, identity)
   }
 
   def saveLastId(id: Long): Either[LambdaError, Unit] = {
