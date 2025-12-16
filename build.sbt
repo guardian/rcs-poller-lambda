@@ -16,7 +16,7 @@ scalacOptions ++= Seq(
 )
 
 val awsVersion = "1.12.679"
-val circeVersion = "0.14.6"
+val circeVersion = "0.14.14"
 
 libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsVersion,
