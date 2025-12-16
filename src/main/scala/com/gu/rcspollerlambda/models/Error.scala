@@ -13,7 +13,8 @@ case class DynamoReadError(err: String) extends LambdaError {
 }
 
 case class S3DownloadError(file: String, err: String) extends LambdaError {
-  override val message: String = s"Error while downloading file $file from S3: $err"
+  override val message: String =
+    s"Error while downloading file $file from S3: $err"
 }
 
 case class RCSError(err: String) extends LambdaError {
@@ -28,6 +29,8 @@ case class ConversionError(err: String) extends LambdaError {
   override val message: String = s"Conversion error: $err"
 }
 
-case class MetadataServicePublishError(errorDescription: String, err: String) extends LambdaError {
-  override val message: String = s"Error ($errorDescription) while sending message to Metadata Service: $err"
+case class MetadataServicePublishError(errorDescription: String, err: String)
+    extends LambdaError {
+  override val message: String =
+    s"Error ($errorDescription) while sending message to Metadata Service: $err"
 }
