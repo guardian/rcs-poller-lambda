@@ -32,17 +32,7 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % "2.0.17"
 )
 
-assemblyJarName := s"${name.value}.jar"
+enablePlugins(JavaAppPackaging)
 
-assembly / assemblyMergeStrategy := {
-  // using two different versions of AWS SDK gives us duplicates in mime.types
-  // we just need to keep one of them (either one) in the jar
-  case "mime.types" => MergeStrategy.last
-  case PathList(ps @ _*) if ps.last == "deriving.conf" => MergeStrategy.filterDistinctLines
-  case PathList(ps @ _*) if ps.last == "module-info.class" => MergeStrategy.discard
-  case PathList("google", "protobuf", "struct.proto") => MergeStrategy.last
-  case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.discard
-  case x =>
-    val oldStrategy = (assembly / assemblyMergeStrategy).value
-    oldStrategy(x)
-}
+Universal / topLevelDirectory := None
+Universal / packageName := normalizedName.value
