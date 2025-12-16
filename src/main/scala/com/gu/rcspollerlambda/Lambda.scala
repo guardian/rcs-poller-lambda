@@ -1,7 +1,7 @@
 package com.gu.rcspollerlambda
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.gu.rcspollerlambda.models.{LambdaError, RightsBatch}
+import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
 import com.gu.rcspollerlambda.services._
 import org.apache.pekko.actor.ActorSystem
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
