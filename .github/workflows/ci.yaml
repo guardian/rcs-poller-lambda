@@ -9,22 +9,17 @@ jobs:
       # required by aws-actions/configure-aws-credentials
       id-token: write
       contents: read
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'corretto'
-          cache: 'sbt'
+      - uses: actions/checkout@v5
+      - name: Setup Java and sbt
+        uses: guardian/setup-scala@v1
       - name: SBT
         run: sbt clean compile test assembly
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: guardian/actions-riff-raff@v4
         with:
-          role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
-          aws-region: eu-west-1
-      - uses: guardian/actions-riff-raff@v2
-        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           projectName: rcs-poller-lambda
           buildNumberOffset: 200
           configPath: riff-raff.yaml
