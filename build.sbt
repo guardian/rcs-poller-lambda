@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
   "software.amazon.awssdk" % "dynamodb" % "2.25.9",
   "org.scanamo" %% "scanamo" % "1.0.0",
-  "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.2.6",
+  "org.playframework" %% "play-ahc-ws-standalone" % "3.0.9",
   "org.scala-lang.modules" %% "scala-xml" % "2.2.0",
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
