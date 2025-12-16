@@ -6,7 +6,7 @@ description:= "A lambda to poll RCS"
 
 version := "1.0"
 
-scalaVersion := "2.13.13"
+scalaVersion := "2.13.18"
 
 scalacOptions ++= Seq(
   "-deprecation",
