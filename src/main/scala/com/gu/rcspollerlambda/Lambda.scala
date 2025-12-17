@@ -1,11 +1,12 @@
 package com.gu.rcspollerlambda
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
 import com.amazonaws.services.lambda.runtime.Context
-import com.gu.rcspollerlambda.models.{ LambdaError, RightsBatch }
+import com.gu.rcspollerlambda.models.{LambdaError, RightsBatch}
 import com.gu.rcspollerlambda.services._
+import org.apache.pekko.actor.ActorSystem
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
+
+import scala.annotation.unused
 
 object Lambda extends Logging {
 
@@ -17,27 +18,34 @@ object Lambda extends Logging {
   /*
    * This is the lambda entry point
    */
-  def handler(context: Context): Unit = {
+  @unused
+  def handler(@unused context: Context): Unit = {
     process()
   }
 
   def process(): Unit = {
     val wsClient = StandaloneAhcWSClient()
-    val newLastId: Either[LambdaError, Option[Long]] = try {
-      for {
-        lastId <- DynamoDB.getLastId
-        body <- RCSService.getXml(wsClient, lastId)
-        xml <- XMLOps.stringToXml(body)
-        rb <- XMLOps.xmlToRightsBatch(xml)
-        jsonRightsList <- RightsBatch.toIdParamsWithJsonBodies(rb.rightsUpdates)
-        metadataMessage <- MetadataService.pushRightsUpdates(wsClient, jsonRightsList)
-      } yield {
-        logger.info(metadataMessage)
-        rb.lastPosition
+    val newLastId: Either[LambdaError, Option[Long]] =
+      try {
+        for {
+          lastId <- DynamoDB.getLastId
+          body <- RCSService.getXml(wsClient, lastId)
+          xml <- XMLOps.stringToXml(body)
+          rb <- XMLOps.xmlToRightsBatch(xml)
+          jsonRightsList <- RightsBatch.toIdParamsWithJsonBodies(
+            rb.rightsUpdates
+          )
+          metadataMessage <- MetadataService.pushRightsUpdates(
+            wsClient,
+            jsonRightsList
+          )
+        } yield {
+          logger.info(metadataMessage)
+          rb.lastPosition
+        }
+      } finally {
+        wsClient.close()
       }
-    } finally {
-      wsClient.close()
-    }
 
     newLastId.fold(
       err => {
@@ -51,8 +59,11 @@ object Lambda extends Logging {
           logger.info(s"Lambda run successfully.")
         case None =>
           CloudWatch.publishOK
-          logger.warn(s"No new rights tags, lambda will run with the same last id again.")
-      })
+          logger.warn(
+            s"No new rights tags, lambda will run with the same last id again."
+          )
+      }
+    )
   }
 }
 

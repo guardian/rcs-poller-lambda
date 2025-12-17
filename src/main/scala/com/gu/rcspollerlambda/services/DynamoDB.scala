@@ -1,8 +1,12 @@
 package com.gu.rcspollerlambda.services
 
 import com.gu.rcspollerlambda.config.Config._
-import com.gu.rcspollerlambda.models.{ DynamoReadError, DynamoWriteError, LambdaError }
-import org.scanamo.{ Scanamo, Table }
+import com.gu.rcspollerlambda.models.{
+  DynamoReadError,
+  DynamoWriteError,
+  LambdaError
+}
+import org.scanamo.{Scanamo, Table}
 import org.scanamo.generic.auto._
 
 import scala.util.Try
@@ -17,14 +21,21 @@ object DynamoDB extends Logging {
   def getLastId: Either[LambdaError, Long] = {
     logger.info(s"Reading the last id from the ${AWS.dynamoTableName} table...")
     Try {
-      scanamo.exec(table.limit(1).scan()).headOption
+      scanamo
+        .exec(table.limit(1).scan())
+        .headOption
         .getOrElse(Left(DynamoReadError("No id found in the table.")))
-        .fold(dynamoReadError => Left(DynamoReadError(dynamoReadError.toString)), lastId => Right(lastId.value))
+        .fold(
+          dynamoReadError => Left(DynamoReadError(dynamoReadError.toString)),
+          lastId => Right(lastId.value)
+        )
     }.fold({ error => Left(DynamoReadError(error.toString)) }, identity)
   }
 
   def saveLastId(id: Long): Either[LambdaError, Unit] = {
-    logger.info(s"Saving the new last id $id in the ${AWS.dynamoTableName} table...")
+    logger.info(
+      s"Saving the new last id $id in the ${AWS.dynamoTableName} table..."
+    )
     Try {
       scanamo.exec(table.put(LastId(value = id)))
     }.toEither.left.map(error => DynamoWriteError(error.toString))

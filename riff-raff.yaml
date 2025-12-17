@@ -6,7 +6,7 @@ deployments:
     type: aws-lambda
     parameters:
       functionNames: [rcs-poller-lambda-]
-      fileName: rcs-poller-lambda.jar
+      fileName: rcs-poller-lambda.zip
       prefixStack: false
     dependencies: [rcs-poller-lambda-cfn]
   rcs-poller-lambda-cfn:

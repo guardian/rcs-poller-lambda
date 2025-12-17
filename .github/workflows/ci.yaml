@@ -6,16 +6,18 @@ jobs:
   CI:
     runs-on: ubuntu-latest
     permissions:
-      # required by aws-actions/configure-aws-credentials
       id-token: write
       contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
+
       - name: Setup Java and sbt
         uses: guardian/setup-scala@v1
+
       - name: SBT
-        run: sbt clean compile test assembly
+        run: sbt clean compile test Universal/packageBin
+
       - uses: guardian/actions-riff-raff@v4
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -27,6 +29,4 @@ jobs:
             rcs-poller-lambda-cfn:
               - cfn.yaml
             rcs-poller-lambda:
-              - target/scala-2.13/rcs-poller-lambda.jar
-
-
+              - target/universal/rcs-poller-lambda.zip
