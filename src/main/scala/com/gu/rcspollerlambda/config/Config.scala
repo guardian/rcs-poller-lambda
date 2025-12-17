@@ -36,7 +36,7 @@ object Config {
     private lazy val awsComposerCredentialsV2 =
       AwsCredentialsProviderChainV2.of(
         ProfileCredentialsProviderV2.create("composer"),
-        DefaultCredentialsProviderV2.create()
+        DefaultCredentialsProviderV2.builder().build()
       )
 
     lazy val dynamoClient = DynamoDbClient
