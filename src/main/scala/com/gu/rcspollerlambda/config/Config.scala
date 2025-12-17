@@ -1,55 +1,44 @@
 package com.gu.rcspollerlambda.config
 
 import java.util.Properties
-import com.amazonaws.auth._
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
-import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.auth.credentials.{
-  AwsCredentialsProviderChain => AwsCredentialsProviderChainV2,
-  DefaultCredentialsProvider => DefaultCredentialsProviderV2,
-  ProfileCredentialsProvider => ProfileCredentialsProviderV2
+  AwsCredentialsProviderChain,
+  DefaultCredentialsProvider,
+  ProfileCredentialsProvider
 }
-import software.amazon.awssdk.regions.{Region => RegionV2}
+import software.amazon.awssdk.regions.Region
 import com.gu.rcspollerlambda.models.LambdaError
 import com.gu.rcspollerlambda.services.S3
 import software.amazon.awssdk.services.cloudwatch.CloudWatchClient
+import software.amazon.awssdk.services.s3.S3Client
 
 object Config {
   object AWS {
-    val awsRegion = Regions.EU_WEST_1
-
     lazy val dynamoTableName: String = s"rcs-poller-lambda-$stage"
 
-    lazy val awsComposerCredentials = new AWSCredentialsProviderChain(
-      new EnvironmentVariableCredentialsProvider(),
-      new ProfileCredentialsProvider("composer"),
-      new InstanceProfileCredentialsProvider(false)
-    )
-
-    private lazy val awsComposerCredentialsV2 =
-      AwsCredentialsProviderChainV2.of(
-        ProfileCredentialsProviderV2.create("composer"),
-        DefaultCredentialsProviderV2.builder().build()
+    private lazy val awsComposerCredentials =
+      AwsCredentialsProviderChain.of(
+        ProfileCredentialsProvider.create("composer"),
+        DefaultCredentialsProvider.builder().build()
       )
 
     lazy val dynamoClient = DynamoDbClient
       .builder()
-      .credentialsProvider(awsComposerCredentialsV2)
-      .region(RegionV2.EU_WEST_1)
+      .credentialsProvider(awsComposerCredentials)
+      .region(Region.EU_WEST_1)
       .build()
 
-    lazy val s3Client: AmazonS3 = AmazonS3ClientBuilder.standard
-      .withRegion(awsRegion)
-      .withCredentials(awsComposerCredentials)
+    lazy val s3Client = S3Client
+      .builder()
+      .credentialsProvider(awsComposerCredentials)
+      .region(Region.EU_WEST_1)
       .build()
 
     lazy val cloudwatchClient = CloudWatchClient
       .builder()
-      .credentialsProvider(awsComposerCredentialsV2)
-      .region(RegionV2.EU_WEST_1)
+      .credentialsProvider(awsComposerCredentials)
+      .region(Region.EU_WEST_1)
       .build()
 
   }
