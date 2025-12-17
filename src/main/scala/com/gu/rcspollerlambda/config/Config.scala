@@ -5,11 +5,6 @@ import com.amazonaws.auth._
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.cloudwatch.{
-  AmazonCloudWatch,
-  AmazonCloudWatchAsync,
-  AmazonCloudWatchAsyncClientBuilder
-}
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.auth.credentials.{
@@ -20,6 +15,7 @@ import software.amazon.awssdk.auth.credentials.{
 import software.amazon.awssdk.regions.{Region => RegionV2}
 import com.gu.rcspollerlambda.models.LambdaError
 import com.gu.rcspollerlambda.services.S3
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient
 
 object Config {
   object AWS {
@@ -49,18 +45,13 @@ object Config {
       .withRegion(awsRegion)
       .withCredentials(awsComposerCredentials)
       .build()
-    lazy val cloudwatchClient: AmazonCloudWatchAsync =
-      AmazonCloudWatchAsyncClientBuilder.standard
-        .withCredentials(awsComposerCredentials)
-        .withEndpointConfiguration(
-          new EndpointConfiguration(
-            Region
-              .getRegion(awsRegion)
-              .getServiceEndpoint(AmazonCloudWatch.ENDPOINT_PREFIX),
-            awsRegion.getName
-          )
-        )
-        .build()
+
+    lazy val cloudwatchClient = CloudWatchClient
+      .builder()
+      .credentialsProvider(awsComposerCredentialsV2)
+      .region(RegionV2.EU_WEST_1)
+      .build()
+
   }
 
   lazy val stage: String = Option(System.getenv("Stage")).getOrElse("DEV")
