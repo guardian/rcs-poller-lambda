@@ -30,7 +30,9 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "org.slf4j" % "slf4j-simple" % "2.0.17"
+  "org.slf4j" % "slf4j-simple" % "2.0.17",
+
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test,
 )
 
 enablePlugins(JavaAppPackaging)
