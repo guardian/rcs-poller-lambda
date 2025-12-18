@@ -1,10 +1,7 @@
 package com.gu.rcspollerlambda.services
 
-import com.amazonaws.services.cloudwatch.model.{
-  MetricDatum,
-  PutMetricDataRequest
-}
 import com.gu.rcspollerlambda.config.Config._
+import software.amazon.awssdk.services.cloudwatch.model._
 
 import scala.util.Try
 
@@ -23,13 +20,17 @@ object CloudWatch extends Logging {
   }
 
   private def publish(value: Double) = {
-    val metric = new MetricDatum()
-      .withValue(value)
-      .withMetricName(metricName)
+    val metric = MetricDatum
+      .builder()
+      .metricName(metricName)
+      .value(value)
+      .build()
 
-    val request = new PutMetricDataRequest()
-      .withNamespace(namespace)
-      .withMetricData(metric)
+    val request = PutMetricDataRequest
+      .builder()
+      .namespace(namespace)
+      .metricData(metric)
+      .build()
 
     Try(AWS.cloudwatchClient.putMetricData(request)).recover { case error =>
       logger.warn(
