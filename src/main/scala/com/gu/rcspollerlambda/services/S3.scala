@@ -3,7 +3,7 @@ package com.gu.rcspollerlambda.services
 import java.util.Properties
 
 import com.gu.rcspollerlambda.config.Config._
-import com.gu.rcspollerlambda.models.{ LambdaError, S3DownloadError }
+import com.gu.rcspollerlambda.models.{LambdaError, S3DownloadError}
 
 object S3 extends Logging {
   // For DEV only
@@ -11,8 +11,13 @@ object S3 extends Logging {
     val file = s"rcs-poller-lambda-config/$stage/example.xml"
     logger.info(s"Loading XML from S3 bucket: $file")
     try {
-      val xmlInputStream = AWS.s3Client.getObject("rcs-poller-lambda-config", s"$stage/example.xml").getObjectContent
-      val xmlAsString = scala.io.Source.fromInputStream(xmlInputStream).getLines().mkString("\n")
+      val xmlInputStream = AWS.s3Client
+        .getObject("rcs-poller-lambda-config", s"$stage/example.xml")
+        .getObjectContent
+      val xmlAsString = scala.io.Source
+        .fromInputStream(xmlInputStream)
+        .getLines()
+        .mkString("\n")
       Right(xmlAsString)
     } catch {
       case e: Throwable => Left(S3DownloadError(file, e.getMessage))

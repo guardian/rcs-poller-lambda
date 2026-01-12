@@ -1,6 +1,9 @@
 package com.gu.rcspollerlambda.services
 
-import com.amazonaws.services.cloudwatch.model.{ MetricDatum, PutMetricDataRequest }
+import com.amazonaws.services.cloudwatch.model.{
+  MetricDatum,
+  PutMetricDataRequest
+}
 import com.gu.rcspollerlambda.config.Config._
 
 import scala.util.Try
@@ -28,9 +31,11 @@ object CloudWatch extends Logging {
       .withNamespace(namespace)
       .withMetricData(metric)
 
-    Try(AWS.cloudwatchClient.putMetricData(request)).recover {
-      case error =>
-        logger.warn(s"Failed to send CloudWatch metric data: ${error.getMessage}", error)
+    Try(AWS.cloudwatchClient.putMetricData(request)).recover { case error =>
+      logger.warn(
+        s"Failed to send CloudWatch metric data: ${error.getMessage}",
+        error
+      )
     }
   }
 }

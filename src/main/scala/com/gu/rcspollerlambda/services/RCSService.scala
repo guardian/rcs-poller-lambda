@@ -8,7 +8,10 @@ import com.gu.rcspollerlambda.config.Config.rcsUrl
 import com.gu.rcspollerlambda.config.Config.subscriberName
 
 object RCSService extends Logging {
-  def getXml(wsClient: StandaloneAhcWSClient, lastId: Long): Either[LambdaError, String] = Switches.rcsEnabled {
+  def getXml(
+      wsClient: StandaloneAhcWSClient,
+      lastId: Long
+  ): Either[LambdaError, String] = Switches.rcsEnabled {
     HTTP.getXml(wsClient, rcsUrl, lastId, subscriberName)
   }
 }
