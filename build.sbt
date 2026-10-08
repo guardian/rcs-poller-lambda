@@ -15,7 +15,7 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code"
 )
 
-val awsVersion = "2.40.10"
+val awsVersion = "2.55.11"
 val circeVersion = "0.14.14"
 
 libraryDependencies ++= Seq(
