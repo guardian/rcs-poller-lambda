@@ -16,7 +16,7 @@ scalacOptions ++= Seq(
 )
 
 val awsVersion = "2.55.11"
-val circeVersion = "0.14.14"
+val circeVersion = "0.14.17"
 
 libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.14.0",
