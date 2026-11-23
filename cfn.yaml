@@ -131,6 +131,8 @@ Resources:
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
+      Architectures:
+        - arm64
       FunctionName: !Sub ${App}-${Stage}
       Code:
         S3Bucket:
